@@ -1,0 +1,1517 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GEO B2B Marketing Intelligence - AI-Driven Decision Optimization</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/echarts/5.4.3/echarts.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: #0a0f1c;
+            color: #e0e0e0;
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+
+        /* Header Styles */
+        .header {
+            background: linear-gradient(135deg, #1a237e 0%, #3949ab 100%);
+            padding: 20px 0;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.3);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+
+        .header-content {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-size: 24px;
+            font-weight: bold;
+            color: #fff;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .logo-icon {
+            width: 40px;
+            height: 40px;
+            background: #00e5ff;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            color: #1a237e;
+        }
+
+        .nav-actions {
+            display: flex;
+            gap: 15px;
+        }
+
+        .action-btn {
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            color: #fff;
+            padding: 8px 16px;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-size: 14px;
+        }
+
+        .action-btn:hover {
+            background: rgba(255, 255, 255, 0.2);
+            transform: translateY(-2px);
+        }
+
+        .action-btn.primary {
+            background: #00e5ff;
+            color: #1a237e;
+            border: none;
+            font-weight: 600;
+        }
+
+        /* Main Container */
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        /* B2B Score Section */
+        .b2b-score-section {
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            border-radius: 16px;
+            padding: 30px;
+            margin-bottom: 30px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .b2b-score-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+        }
+
+        .score-container {
+            display: flex;
+            gap: 40px;
+            align-items: center;
+        }
+
+        .ai-influence-score {
+            text-align: center;
+        }
+
+        .score-value {
+            font-size: 64px;
+            font-weight: bold;
+            color: #00e5ff;
+            display: flex;
+            align-items: baseline;
+            gap: 5px;
+        }
+
+        .score-label {
+            font-size: 16px;
+            color: #b3e5fc;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-top: 10px;
+        }
+
+        .score-metrics {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
+        }
+
+        .metric-item {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 20px;
+            border-radius: 8px;
+            text-align: center;
+        }
+
+        .metric-value {
+            font-size: 28px;
+            font-weight: bold;
+            color: #00e5ff;
+        }
+
+        .metric-label {
+            font-size: 12px;
+            color: #b3e5fc;
+            margin-top: 5px;
+            text-transform: uppercase;
+        }
+
+        /* B2B Metrics Grid */
+        .b2b-metrics-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .metric-card {
+            background: #1a2332;
+            border-radius: 12px;
+            padding: 25px;
+            text-align: center;
+            transition: transform 0.3s;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .metric-card::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(0, 229, 255, 0.1) 0%, transparent 70%);
+            transform: rotate(45deg);
+        }
+
+        .metric-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .metric-card.highlight {
+            background: linear-gradient(135deg, #00e5ff 0%, #00acc1 100%);
+        }
+
+        .metric-card.highlight .metric-title,
+        .metric-card.highlight .metric-change {
+            color: #1a237e;
+        }
+
+        .metric-title {
+            font-size: 14px;
+            color: #8892b0;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 15px;
+        }
+
+        .metric-main-value {
+            font-size: 36px;
+            font-weight: bold;
+            color: #fff;
+            margin-bottom: 10px;
+        }
+
+        .metric-change {
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 5px;
+        }
+
+        .metric-change.positive {
+            color: #4caf50;
+        }
+
+        .metric-change.negative {
+            color: #f44336;
+        }
+
+        /* Analysis Section */
+        .analysis-section {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .analysis-card {
+            background: #1a2332;
+            border-radius: 12px;
+            padding: 25px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+        }
+
+        .analysis-card.full-width {
+            grid-column: 1 / -1;
+        }
+
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .card-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: #fff;
+        }
+
+        .card-actions {
+            display: flex;
+            gap: 10px;
+        }
+
+        .card-action-btn {
+            background: #2a3f5f;
+            border: none;
+            color: #fff;
+            padding: 6px 12px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 12px;
+            transition: background 0.3s;
+        }
+
+        .card-action-btn:hover {
+            background: #3a4f6f;
+        }
+
+        .card-action-btn.active {
+            background: #00e5ff;
+            color: #1a237e;
+        }
+
+        /* Chart Containers */
+        .chart-container {
+            height: 300px;
+        }
+
+        .large-chart-container {
+            height: 400px;
+        }
+
+        /* Decision Influence Panel */
+        .decision-panel {
+            background: #1a2332;
+            border-radius: 12px;
+            padding: 25px;
+            margin-bottom: 30px;
+        }
+
+        .decision-stages {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 20px;
+            margin-top: 20px;
+        }
+
+        .stage-card {
+            background: #0a0f1c;
+            border-radius: 8px;
+            padding: 20px;
+            text-align: center;
+            border: 2px solid transparent;
+            transition: all 0.3s;
+            cursor: pointer;
+        }
+
+        .stage-card:hover {
+            border-color: #00e5ff;
+            transform: translateY(-3px);
+        }
+
+        .stage-icon {
+            font-size: 32px;
+            margin-bottom: 10px;
+        }
+
+        .stage-name {
+            font-size: 14px;
+            font-weight: 600;
+            color: #fff;
+            margin-bottom: 10px;
+        }
+
+        .stage-influence {
+            font-size: 24px;
+            font-weight: bold;
+            color: #00e5ff;
+        }
+
+        .stage-ai-mentions {
+            font-size: 12px;
+            color: #8892b0;
+            margin-top: 5px;
+        }
+
+        /* Query Opportunities */
+        .opportunities-section {
+            background: #1a2332;
+            border-radius: 12px;
+            padding: 25px;
+            margin-bottom: 30px;
+        }
+
+        .opportunity-list {
+            display: grid;
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .opportunity-item {
+            background: #0a0f1c;
+            border-radius: 8px;
+            padding: 20px;
+            display: grid;
+            grid-template-columns: 1fr auto auto;
+            gap: 20px;
+            align-items: center;
+            transition: all 0.3s;
+            border: 1px solid transparent;
+        }
+
+        .opportunity-item:hover {
+            border-color: #00e5ff;
+            transform: translateX(5px);
+        }
+
+        .opportunity-query {
+            font-size: 16px;
+            font-weight: 600;
+            color: #fff;
+        }
+
+        .opportunity-metrics {
+            display: flex;
+            gap: 20px;
+        }
+
+        .opportunity-metric {
+            text-align: center;
+        }
+
+        .opportunity-metric-value {
+            font-size: 20px;
+            font-weight: bold;
+            color: #00e5ff;
+        }
+
+        .opportunity-metric-label {
+            font-size: 12px;
+            color: #8892b0;
+        }
+
+        .optimize-btn {
+            background: linear-gradient(135deg, #00e5ff 0%, #00acc1 100%);
+            border: none;
+            color: #1a237e;
+            padding: 10px 20px;
+            border-radius: 6px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .optimize-btn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 4px 15px rgba(0, 229, 255, 0.3);
+        }
+
+        /* Conversion Funnel */
+        .funnel-section {
+            background: #1a2332;
+            border-radius: 12px;
+            padding: 25px;
+            margin-bottom: 30px;
+        }
+
+        .funnel-stages {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 10px;
+            margin-top: 20px;
+            position: relative;
+        }
+
+        .funnel-stage {
+            background: #0a0f1c;
+            padding: 20px;
+            text-align: center;
+            border-radius: 8px;
+            position: relative;
+        }
+
+        .funnel-stage::after {
+            content: '→';
+            position: absolute;
+            right: -20px;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 24px;
+            color: #00e5ff;
+        }
+
+        .funnel-stage:last-child::after {
+            display: none;
+        }
+
+        .funnel-stage-name {
+            font-size: 14px;
+            color: #8892b0;
+            margin-bottom: 10px;
+        }
+
+        .funnel-stage-value {
+            font-size: 28px;
+            font-weight: bold;
+            color: #00e5ff;
+            margin-bottom: 5px;
+        }
+
+        .funnel-stage-rate {
+            font-size: 12px;
+            color: #4caf50;
+        }
+
+        /* Content Recommendations */
+        .recommendations-section {
+            background: #1a2332;
+            border-radius: 12px;
+            padding: 25px;
+            margin-bottom: 30px;
+        }
+
+        .recommendation-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
+
+        .recommendation-card {
+            background: #0a0f1c;
+            border-radius: 8px;
+            padding: 20px;
+            border-left: 4px solid #00e5ff;
+        }
+
+        .recommendation-priority {
+            display: inline-block;
+            background: #f44336;
+            color: white;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+            margin-bottom: 15px;
+        }
+
+        .recommendation-priority.high {
+            background: #f44336;
+        }
+
+        .recommendation-priority.medium {
+            background: #ff9800;
+        }
+
+        .recommendation-priority.low {
+            background: #4caf50;
+        }
+
+        .recommendation-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: #fff;
+            margin-bottom: 10px;
+        }
+
+        .recommendation-desc {
+            font-size: 14px;
+            color: #8892b0;
+            line-height: 1.6;
+            margin-bottom: 15px;
+        }
+
+        .recommendation-impact {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding-top: 15px;
+            border-top: 1px solid #2a3f5f;
+        }
+
+        .impact-metric {
+            font-size: 14px;
+            color: #00e5ff;
+            font-weight: 600;
+        }
+
+        /* Real-time Monitor */
+        .monitor-section {
+            background: #1a2332;
+            border-radius: 12px;
+            padding: 25px;
+            margin-bottom: 30px;
+        }
+
+        .monitor-grid {
+            display: grid;
+            grid-template-columns: 1fr 2fr;
+            gap: 20px;
+            margin-top: 20px;
+        }
+
+        .monitor-stats {
+            display: grid;
+            gap: 15px;
+        }
+
+        .monitor-stat {
+            background: #0a0f1c;
+            padding: 15px;
+            border-radius: 8px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .monitor-stat-label {
+            font-size: 14px;
+            color: #8892b0;
+        }
+
+        .monitor-stat-value {
+            font-size: 20px;
+            font-weight: bold;
+            color: #00e5ff;
+        }
+
+        .activity-feed {
+            background: #0a0f1c;
+            border-radius: 8px;
+            padding: 20px;
+            max-height: 400px;
+            overflow-y: auto;
+        }
+
+        .activity-item {
+            padding: 15px;
+            border-bottom: 1px solid #2a3f5f;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .activity-item:last-child {
+            border-bottom: none;
+        }
+
+        .activity-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: rgba(0, 229, 255, 0.2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+        }
+
+        .activity-content {
+            flex: 1;
+        }
+
+        .activity-title {
+            font-size: 14px;
+            font-weight: 600;
+            color: #fff;
+            margin-bottom: 5px;
+        }
+
+        .activity-desc {
+            font-size: 12px;
+            color: #8892b0;
+        }
+
+        .activity-time {
+            font-size: 12px;
+            color: #8892b0;
+        }
+
+        /* Alert Banner */
+        .alert-banner {
+            background: linear-gradient(135deg, #f44336 0%, #e91e63 100%);
+            color: white;
+            padding: 15px 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0% {
+                box-shadow: 0 0 0 0 rgba(244, 67, 54, 0.7);
+            }
+            70% {
+                box-shadow: 0 0 0 10px rgba(244, 67, 54, 0);
+            }
+            100% {
+                box-shadow: 0 0 0 0 rgba(244, 67, 54, 0);
+            }
+        }
+
+        .alert-icon {
+            font-size: 24px;
+        }
+
+        .alert-content {
+            flex: 1;
+        }
+
+        .alert-title {
+            font-weight: 600;
+            margin-bottom: 5px;
+        }
+
+        .alert-message {
+            font-size: 14px;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 1024px) {
+            .analysis-section {
+                grid-template-columns: 1fr;
+            }
+
+            .decision-stages {
+                grid-template-columns: repeat(3, 1fr);
+            }
+
+            .funnel-stages {
+                grid-template-columns: 1fr;
+                gap: 20px;
+            }
+
+            .funnel-stage::after {
+                display: none;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .b2b-metrics-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .score-container {
+                flex-direction: column;
+            }
+
+            .score-metrics {
+                grid-template-columns: 1fr;
+            }
+
+            .monitor-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="header-content">
+            <div class="logo">
+                <div class="logo-icon">B2B</div>
+                <span>GEO B2B Marketing Intelligence</span>
+            </div>
+            <div class="nav-actions">
+                <button class="action-btn" onclick="exportReport()">Export Report</button>
+                <button class="action-btn" onclick="scheduleAnalysis()">Schedule Analysis</button>
+                <button class="action-btn primary" onclick="runOptimization()">Optimize Now</button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="container">
+        <!-- Alert Banner -->
+        <div class="alert-banner" id="alertBanner">
+            <div class="alert-icon">⚡</div>
+            <div class="alert-content">
+                <div class="alert-title">AI Decision Impact Alert</div>
+                <div class="alert-message">Your SaaS product visibility dropped 15% in "best project management software" AI queries. Immediate optimization recommended.</div>
+            </div>
+            <button class="action-btn" onclick="viewAlert()">View Details</button>
+        </div>
+
+        <!-- B2B AI Influence Score -->
+        <div class="b2b-score-section">
+            <div class="b2b-score-header">
+                <div>
+                    <h2 style="font-size: 28px; margin-bottom: 10px;">B2B AI Decision Influence Score</h2>
+                    <p style="color: #b3e5fc;">Real-time measurement of your brand's impact on AI-driven B2B purchase decisions</p>
+                </div>
+                <span style="font-size: 14px; color: #b3e5fc;">Last updated: 2 minutes ago</span>
+            </div>
+            <div class="score-container">
+                <div class="ai-influence-score">
+                    <div class="score-value">
+                        <span id="influence-score">82</span>
+                        <span style="font-size: 32px;">%</span>
+                    </div>
+                    <div class="score-label">AI Influence Index</div>
+                </div>
+                <div class="score-metrics">
+                    <div class="metric-item">
+                        <div class="metric-value">3.5x</div>
+                        <div class="metric-label">Higher Conversion</div>
+                    </div>
+                    <div class="metric-item">
+                        <div class="metric-value">67%</div>
+                        <div class="metric-label">B2B AI Usage</div>
+                    </div>
+                    <div class="metric-item">
+                        <div class="metric-value">Top 5</div>
+                        <div class="metric-label">Industry Ranking</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- B2B Metrics Grid -->
+        <div class="b2b-metrics-grid">
+            <div class="metric-card highlight">
+                <div class="metric-title">AI Query Visibility</div>
+                <div class="metric-main-value">42.8%</div>
+                <div class="metric-change positive">
+                    <span>↑</span> +8.5% from last week
+                </div>
+            </div>
+            <div class="metric-card">
+                <div class="metric-title">Decision Stage Coverage</div>
+                <div class="metric-main-value">76%</div>
+                <div class="metric-change positive">
+                    <span>↑</span> +5.2% from last week
+                </div>
+            </div>
+            <div class="metric-card">
+                <div class="metric-title">Competitor Gap</div>
+                <div class="metric-main-value">+15%</div>
+                <div class="metric-change positive">
+                    <span>↑</span> Leading by 15%
+                </div>
+            </div>
+            <div class="metric-card">
+                <div class="metric-title">AI-Driven Leads</div>
+                <div class="metric-main-value">847</div>
+                <div class="metric-change positive">
+                    <span>↑</span> +125 this week
+                </div>
+            </div>
+        </div>
+
+        <!-- B2B Decision Journey Analysis -->
+        <div class="decision-panel">
+            <div class="card-header">
+                <h3 class="card-title">B2B Decision Journey AI Influence</h3>
+                <button class="card-action-btn" onclick="viewJourneyDetails()">View Details</button>
+            </div>
+            <div class="decision-stages">
+                <div class="stage-card">
+                    <div class="stage-icon">🔍</div>
+                    <div class="stage-name">Research</div>
+                    <div class="stage-influence">89%</div>
+                    <div class="stage-ai-mentions">3,241 AI mentions</div>
+                </div>
+                <div class="stage-card">
+                    <div class="stage-icon">📊</div>
+                    <div class="stage-name">Evaluation</div>
+                    <div class="stage-influence">76%</div>
+                    <div class="stage-ai-mentions">2,156 AI mentions</div>
+                </div>
+                <div class="stage-card">
+                    <div class="stage-icon">🤝</div>
+                    <div class="stage-name">Comparison</div>
+                    <div class="stage-influence">82%</div>
+                    <div class="stage-ai-mentions">2,892 AI mentions</div>
+                </div>
+                <div class="stage-card">
+                    <div class="stage-icon">💰</div>
+                    <div class="stage-name">Pricing</div>
+                    <div class="stage-influence">68%</div>
+                    <div class="stage-ai-mentions">1,423 AI mentions</div>
+                </div>
+                <div class="stage-card">
+                    <div class="stage-icon">✅</div>
+                    <div class="stage-name">Decision</div>
+                    <div class="stage-influence">91%</div>
+                    <div class="stage-ai-mentions">3,567 AI mentions</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Charts Section -->
+        <div class="analysis-section">
+            <!-- B2B Query Performance -->
+            <div class="analysis-card">
+                <div class="card-header">
+                    <h3 class="card-title">B2B Query Performance Trends</h3>
+                    <div class="card-actions">
+                        <button class="card-action-btn active" onclick="updateQueryChart('7d')">7D</button>
+                        <button class="card-action-btn" onclick="updateQueryChart('30d')">30D</button>
+                        <button class="card-action-btn" onclick="updateQueryChart('90d')">90D</button>
+                    </div>
+                </div>
+                <div id="query-performance-chart" class="chart-container"></div>
+            </div>
+
+            <!-- Competitor Analysis -->
+            <div class="analysis-card">
+                <div class="card-header">
+                    <h3 class="card-title">AI Market Share Analysis</h3>
+                </div>
+                <div id="market-share-chart" class="chart-container"></div>
+            </div>
+
+            <!-- Content Gap Analysis -->
+            <div class="analysis-card full-width">
+                <div class="card-header">
+                    <h3 class="card-title">B2B Content Performance Matrix</h3>
+                </div>
+                <div id="content-matrix-chart" class="large-chart-container"></div>
+            </div>
+        </div>
+
+        <!-- High-Value Query Opportunities -->
+        <div class="opportunities-section">
+            <div class="card-header">
+                <h3 class="card-title">High-Value B2B Query Opportunities</h3>
+                <button class="card-action-btn" onclick="scanOpportunities()">Scan for More</button>
+            </div>
+            <div class="opportunity-list">
+                <div class="opportunity-item">
+                    <div>
+                        <div class="opportunity-query">Best enterprise project management software 2025</div>
+                        <div style="font-size: 14px; color: #8892b0; margin-top: 5px;">High-intent B2B query with strong purchase signals</div>
+                    </div>
+                    <div class="opportunity-metrics">
+                        <div class="opportunity-metric">
+                            <div class="opportunity-metric-value">15K</div>
+                            <div class="opportunity-metric-label">Monthly Volume</div>
+                        </div>
+                        <div class="opportunity-metric">
+                            <div class="opportunity-metric-value">28%</div>
+                            <div class="opportunity-metric-label">Current Share</div>
+                        </div>
+                    </div>
+                    <button class="optimize-btn" onclick="optimizeQuery('enterprise-pm')">Optimize</button>
+                </div>
+
+                <div class="opportunity-item">
+                    <div>
+                        <div class="opportunity-query">SaaS CRM comparison for mid-market companies</div>
+                        <div style="font-size: 14px; color: #8892b0; margin-top: 5px;">Decision-stage query with high conversion potential</div>
+                    </div>
+                    <div class="opportunity-metrics">
+                        <div class="opportunity-metric">
+                            <div class="opportunity-metric-value">8.5K</div>
+                            <div class="opportunity-metric-label">Monthly Volume</div>
+                        </div>
+                        <div class="opportunity-metric">
+                            <div class="opportunity-metric-value">12%</div>
+                            <div class="opportunity-metric-label">Current Share</div>
+                        </div>
+                    </div>
+                    <button class="optimize-btn" onclick="optimizeQuery('crm-comparison')">Optimize</button>
+                </div>
+
+                <div class="opportunity-item">
+                    <div>
+                        <div class="opportunity-query">How to choose business intelligence tools</div>
+                        <div style="font-size: 14px; color: #8892b0; margin-top: 5px;">Educational query leading to product consideration</div>
+                    </div>
+                    <div class="opportunity-metrics">
+                        <div class="opportunity-metric">
+                            <div class="opportunity-metric-value">22K</div>
+                            <div class="opportunity-metric-label">Monthly Volume</div>
+                        </div>
+                        <div class="opportunity-metric">
+                            <div class="opportunity-metric-value">5%</div>
+                            <div class="opportunity-metric-label">Current Share</div>
+                        </div>
+                    </div>
+                    <button class="optimize-btn" onclick="optimizeQuery('bi-tools')">Optimize</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- AI-Driven Conversion Funnel -->
+        <div class="funnel-section">
+            <div class="card-header">
+                <h3 class="card-title">AI-Driven B2B Conversion Funnel</h3>
+                <span style="font-size: 14px; color: #8892b0;">Tracking AI influence at each stage</span>
+            </div>
+            <div class="funnel-stages">
+                <div class="funnel-stage">
+                    <div class="funnel-stage-name">AI Impressions</div>
+                    <div class="funnel-stage-value">124,580</div>
+                    <div class="funnel-stage-rate">100%</div>
+                </div>
+                <div class="funnel-stage">
+                    <div class="funnel-stage-name">Qualified Clicks</div>
+                    <div class="funnel-stage-value">15,823</div>
+                    <div class="funnel-stage-rate">12.7% CTR</div>
+                </div>
+                <div class="funnel-stage">
+                    <div class="funnel-stage-name">Demo Requests</div>
+                    <div class="funnel-stage-value">1,247</div>
+                    <div class="funnel-stage-rate">7.9% conversion</div>
+                </div>
+                <div class="funnel-stage">
+                    <div class="funnel-stage-name">Closed Deals</div>
+                    <div class="funnel-stage-value">89</div>
+                    <div class="funnel-stage-rate">7.1% close rate</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Content Optimization Recommendations -->
+        <div class="recommendations-section">
+            <div class="card-header">
+                <h3 class="card-title">AI-Optimized Content Recommendations</h3>
+                <button class="card-action-btn" onclick="generateMore()">Generate More</button>
+            </div>
+            <div class="recommendation-grid">
+                <div class="recommendation-card">
+                    <span class="recommendation-priority high">High Priority</span>
+                    <h4 class="recommendation-title">Create Comparison Matrix Content</h4>
+                    <p class="recommendation-desc">AI models prefer structured comparison tables for B2B software queries. Create detailed feature comparison matrices for top competitors.</p>
+                    <div class="recommendation-impact">
+                        <span class="impact-metric">Est. +35% AI visibility</span>
+                        <button class="card-action-btn" onclick="implementRec('comparison')">Implement</button>
+                    </div>
+                </div>
+
+                <div class="recommendation-card">
+                    <span class="recommendation-priority high">High Priority</span>
+                    <h4 class="recommendation-title">Add ROI Calculator Schema</h4>
+                    <p class="recommendation-desc">Implement structured data for ROI calculations. AI frequently cites numerical proof points in B2B recommendations.</p>
+                    <div class="recommendation-impact">
+                        <span class="impact-metric">Est. +28% conversion</span>
+                        <button class="card-action-btn" onclick="implementRec('roi')">Implement</button>
+                    </div>
+                </div>
+
+                <div class="recommendation-card">
+                    <span class="recommendation-priority medium">Medium Priority</span>
+                    <h4 class="recommendation-title">Optimize Case Study Format</h4>
+                    <p class="recommendation-desc">Restructure case studies with clear problem-solution-result format. Include quantifiable metrics for AI extraction.</p>
+                    <div class="recommendation-impact">
+                        <span class="impact-metric">Est. +22% citations</span>
+                        <button class="card-action-btn" onclick="implementRec('casestudy')">Implement</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Real-time AI Response Monitor -->
+        <div class="monitor-section">
+            <div class="card-header">
+                <h3 class="card-title">Real-time AI Response Monitor</h3>
+                <span style="font-size: 14px; color: #4caf50;">● Live</span>
+            </div>
+            <div class="monitor-grid">
+                <div class="monitor-stats">
+                    <div class="monitor-stat">
+                        <span class="monitor-stat-label">Active AI Sessions</span>
+                        <span class="monitor-stat-value">1,247</span>
+                    </div>
+                    <div class="monitor-stat">
+                        <span class="monitor-stat-label">B2B Queries/Hour</span>
+                        <span class="monitor-stat-value">342</span>
+                    </div>
+                    <div class="monitor-stat">
+                        <span class="monitor-stat-label">Brand Mention Rate</span>
+                        <span class="monitor-stat-value">78.4%</span>
+                    </div>
+                    <div class="monitor-stat">
+                        <span class="monitor-stat-label">Avg Response Position</span>
+                        <span class="monitor-stat-value">#2</span>
+                    </div>
+                </div>
+                <div class="activity-feed" id="activity-feed">
+                    <div class="activity-item">
+                        <div class="activity-icon">🎯</div>
+                        <div class="activity-content">
+                            <div class="activity-title">High-value query detected</div>
+                            <div class="activity-desc">"Enterprise CRM software pricing" - Your brand mentioned in position #1</div>
+                        </div>
+                        <div class="activity-time">2 min ago</div>
+                    </div>
+                    <div class="activity-item">
+                        <div class="activity-icon">📈</div>
+                        <div class="activity-content">
+                            <div class="activity-title">Conversion spike detected</div>
+                            <div class="activity-desc">15% increase in demo requests from AI-driven traffic</div>
+                        </div>
+                        <div class="activity-time">8 min ago</div>
+                    </div>
+                    <div class="activity-item">
+                        <div class="activity-icon">⚡</div>
+                        <div class="activity-content">
+                            <div class="activity-title">Competitor alert</div>
+                            <div class="activity-desc">Competitor A gaining visibility in "project management" queries</div>
+                        </div>
+                        <div class="activity-time">15 min ago</div>
+                    </div>
+                    <div class="activity-item">
+                        <div class="activity-icon">✅</div>
+                        <div class="activity-content">
+                            <div class="activity-title">Content optimization success</div>
+                            <div class="activity-desc">FAQ optimization increased AI citations by 32%</div>
+                        </div>
+                        <div class="activity-time">23 min ago</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Industry Benchmark -->
+        <div class="analysis-card full-width">
+            <div class="card-header">
+                <h3 class="card-title">B2B Industry AI Performance Benchmark</h3>
+            </div>
+            <div id="industry-benchmark-chart" class="large-chart-container"></div>
+        </div>
+    </main>
+
+    <script>
+        // Initialize all charts
+        let queryPerformanceChart, marketShareChart, contentMatrixChart, industryBenchmarkChart;
+
+        // Initialize on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            initializeCharts();
+            startRealtimeUpdates();
+            animateInfluenceScore();
+        });
+
+        function initializeCharts() {
+            // Query Performance Chart
+            queryPerformanceChart = echarts.init(document.getElementById('query-performance-chart'));
+            const queryPerformanceOption = {
+                tooltip: {
+                    trigger: 'axis',
+                    backgroundColor: 'rgba(0, 0, 0, 0.8)',
+                    textStyle: { color: '#fff' }
+                },
+                legend: {
+                    data: ['Visibility', 'Mentions', 'Conversions'],
+                    textStyle: { color: '#8892b0' },
+                    top: 10
+                },
+                grid: {
+                    left: '3%',
+                    right: '4%',
+                    bottom: '3%',
+                    top: '15%',
+                    containLabel: true
+                },
+                xAxis: {
+                    type: 'category',
+                    boundaryGap: false,
+                    data: generateDateLabels(7),
+                    axisLine: { lineStyle: { color: '#3a4f6f' } },
+                    axisLabel: { color: '#8892b0' }
+                },
+                yAxis: {
+                    type: 'value',
+                    axisLine: { lineStyle: { color: '#3a4f6f' } },
+                    axisLabel: { color: '#8892b0' },
+                    splitLine: { lineStyle: { color: '#2a3f5f' } }
+                },
+                series: [
+                    {
+                        name: 'Visibility',
+                        type: 'line',
+                        smooth: true,
+                        data: [35, 38, 36, 40, 39, 41, 42.8],
+                        itemStyle: { color: '#00e5ff' },
+                        areaStyle: {
+                            color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
+                                { offset: 0, color: 'rgba(0, 229, 255, 0.3)' },
+                                { offset: 1, color: 'rgba(0, 229, 255, 0.05)' }
+                            ])
+                        }
+                    },
+                    {
+                        name: 'Mentions',
+                        type: 'line',
+                        smooth: true,
+                        data: [320, 342, 338, 365, 358, 385, 412],
+                        itemStyle: { color: '#4caf50' }
+                    },
+                    {
+                        name: 'Conversions',
+                        type: 'line',
+                        smooth: true,
+                        data: [12, 14, 13, 16, 15, 18, 21],
+                        itemStyle: { color: '#ff9800' }
+                    }
+                ]
+            };
+            queryPerformanceChart.setOption(queryPerformanceOption);
+
+            // Market Share Chart
+            marketShareChart = echarts.init(document.getElementById('market-share-chart'));
+            const marketShareOption = {
+                tooltip: {
+                    trigger: 'item',
+                    backgroundColor: 'rgba(0, 0, 0, 0.8)',
+                    textStyle: { color: '#fff' }
+                },
+                series: [{
+                    type: 'pie',
+                    radius: ['40%', '70%'],
+                    avoidLabelOverlap: false,
+                    itemStyle: {
+                        borderRadius: 10,
+                        borderColor: '#1a2332',
+                        borderWidth: 2
+                    },
+                    label: {
+                        show: true,
+                        formatter: '{b}\n{d}%',
+                        color: '#8892b0'
+                    },
+                    emphasis: {
+                        label: {
+                            show: true,
+                            fontSize: '16',
+                            fontWeight: 'bold',
+                            color: '#fff'
+                        }
+                    },
+                    data: [
+                        { value: 42.8, name: 'Your Brand', itemStyle: { color: '#00e5ff' } },
+                        { value: 28.5, name: 'Competitor A', itemStyle: { color: '#f44336' } },
+                        { value: 18.2, name: 'Competitor B', itemStyle: { color: '#ff9800' } },
+                        { value: 10.5, name: 'Others', itemStyle: { color: '#4caf50' } }
+                    ]
+                }]
+            };
+            marketShareChart.setOption(marketShareOption);
+
+            // Content Performance Matrix
+            contentMatrixChart = echarts.init(document.getElementById('content-matrix-chart'));
+            const contentMatrixOption = {
+                tooltip: {
+                    trigger: 'item',
+                    backgroundColor: 'rgba(0, 0, 0, 0.8)',
+                    textStyle: { color: '#fff' }
+                },
+                grid: {
+                    left: '3%',
+                    right: '4%',
+                    bottom: '3%',
+                    top: '10%',
+                    containLabel: true
+                },
+                xAxis: {
+                    name: 'AI Visibility (%)',
+                    nameLocation: 'middle',
+                    nameGap: 30,
+                    type: 'value',
+                    min: 0,
+                    max: 100,
+                    axisLine: { lineStyle: { color: '#3a4f6f' } },
+                    axisLabel: { color: '#8892b0' },
+                    splitLine: { lineStyle: { color: '#2a3f5f' } }
+                },
+                yAxis: {
+                    name: 'Conversion Rate (%)',
+                    nameLocation: 'middle',
+                    nameGap: 30,
+                    type: 'value',
+                    min: 0,
+                    max: 20,
+                    axisLine: { lineStyle: { color: '#3a4f6f' } },
+                    axisLabel: { color: '#8892b0' },
+                    splitLine: { lineStyle: { color: '#2a3f5f' } }
+                },
+                series: [{
+                    name: 'Content Performance',
+                    type: 'scatter',
+                    symbolSize: function (data) {
+                        return Math.sqrt(data[2]) * 5;
+                    },
+                    data: [
+                        [78, 15.2, 450, 'Product Comparisons'],
+                        [65, 12.8, 320, 'Case Studies'],
+                        [82, 18.5, 580, 'ROI Calculators'],
+                        [45, 8.2, 150, 'Blog Posts'],
+                        [92, 19.8, 680, 'Feature Guides'],
+                        [58, 10.5, 220, 'Whitepapers'],
+                        [71, 14.2, 380, 'Demo Videos'],
+                        [53, 9.8, 180, 'Webinars']
+                    ],
+                    label: {
+                        show: true,
+                        formatter: function (param) {
+                            return param.data[3];
+                        },
+                        position: 'top',
+                        color: '#fff',
+                        fontSize: 12
+                    },
+                    itemStyle: {
+                        color: function (params) {
+                            const colors = ['#00e5ff', '#4caf50', '#ff9800', '#e91e63', '#9c27b0', '#2196f3', '#ffc107', '#795548'];
+                            return colors[params.dataIndex % colors.length];
+                        }
+                    }
+                }]
+            };
+            contentMatrixChart.setOption(contentMatrixOption);
+
+            // Industry Benchmark Chart
+            industryBenchmarkChart = echarts.init(document.getElementById('industry-benchmark-chart'));
+            const industryBenchmarkOption = {
+                tooltip: {
+                    trigger: 'axis',
+                    axisPointer: { type: 'shadow' },
+                    backgroundColor: 'rgba(0, 0, 0, 0.8)',
+                    textStyle: { color: '#fff' }
+                },
+                legend: {
+                    data: ['Your Company', 'Industry Average', 'Top Performer'],
+                    textStyle: { color: '#8892b0' }
+                },
+                grid: {
+                    left: '3%',
+                    right: '4%',
+                    bottom: '3%',
+                    containLabel: true
+                },
+                xAxis: {
+                    type: 'category',
+                    data: ['AI Visibility', 'Query Coverage', 'Conversion Rate', 'Brand Authority', 'Content Quality'],
+                    axisLine: { lineStyle: { color: '#3a4f6f' } },
+                    axisLabel: { color: '#8892b0', rotate: 15 }
+                },
+                yAxis: {
+                    type: 'value',
+                    axisLine: { lineStyle: { color: '#3a4f6f' } },
+                    axisLabel: { color: '#8892b0', formatter: '{value}%' },
+                    splitLine: { lineStyle: { color: '#2a3f5f' } }
+                },
+                series: [
+                    {
+                        name: 'Your Company',
+                        type: 'bar',
+                        data: [42.8, 76, 15.2, 82, 88],
+                        itemStyle: { color: '#00e5ff' }
+                    },
+                    {
+                        name: 'Industry Average',
+                        type: 'bar',
+                        data: [28.5, 52, 9.8, 65, 72],
+                        itemStyle: { color: '#ff9800' }
+                    },
+                    {
+                        name: 'Top Performer',
+                        type: 'bar',
+                        data: [58.2, 89, 22.5, 94, 96],
+                        itemStyle: { color: '#4caf50' }
+                    }
+                ]
+            };
+            industryBenchmarkChart.setOption(industryBenchmarkOption);
+        }
+
+        // Helper functions
+        function generateDateLabels(days) {
+            const labels = [];
+            const today = new Date();
+            for (let i = days - 1; i >= 0; i--) {
+                const date = new Date(today);
+                date.setDate(date.getDate() - i);
+                labels.push(date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' }));
+            }
+            return labels;
+        }
+
+        function animateInfluenceScore() {
+            const scoreElement = document.getElementById('influence-score');
+            let currentScore = 0;
+            const targetScore = 82;
+            const increment = targetScore / 50;
+            
+            const animation = setInterval(() => {
+                currentScore += increment;
+                if (currentScore >= targetScore) {
+                    currentScore = targetScore;
+                    clearInterval(animation);
+                }
+                scoreElement.textContent = Math.round(currentScore);
+            }, 20);
+        }
+
+        function startRealtimeUpdates() {
+            // Update activity feed every 30 seconds
+            setInterval(() => {
+                updateActivityFeed();
+            }, 30000);
+
+            // Update metrics every minute
+            setInterval(() => {
+                updateMetrics();
+            }, 60000);
+        }
+
+        function updateActivityFeed() {
+            const activities = [
+                { icon: '🎯', title: 'High-value query detected', desc: '"Best ERP software for manufacturing" - Your brand mentioned' },
+                { icon: '📈', title: 'Conversion milestone', desc: '100th AI-driven demo request this week' },
+                { icon: '⚡', title: 'Content performance alert', desc: 'ROI calculator page seeing 45% increase in AI citations' },
+                { icon: '🚀', title: 'Ranking improvement', desc: 'Moved to #1 position for "SaaS pricing models"' },
+                { icon: '💡', title: 'Optimization opportunity', desc: 'New B2B query trend detected: "AI-powered analytics tools"' }
+            ];
+
+            const feed = document.getElementById('activity-feed');
+            const randomActivity = activities[Math.floor(Math.random() * activities.length)];
+            
+            const newItem = document.createElement('div');
+            newItem.className = 'activity-item';
+            newItem.innerHTML = `
+                <div class="activity-icon">${randomActivity.icon}</div>
+                <div class="activity-content">
+                    <div class="activity-title">${randomActivity.title}</div>
+                    <div class="activity-desc">${randomActivity.desc}</div>
+                </div>
+                <div class="activity-time">Just now</div>
+            `;
+            
+            feed.insertBefore(newItem, feed.firstChild);
+            
+            // Remove old items if too many
+            while (feed.children.length > 10) {
+                feed.removeChild(feed.lastChild);
+            }
+        }
+
+        function updateMetrics() {
+            // Simulate metric updates
+            const metrics = document.querySelectorAll('.metric-main-value');
+            metrics.forEach((metric, index) => {
+                if (!metric.textContent.includes('%') && !metric.textContent.includes('x')) {
+                    const currentValue = parseInt(metric.textContent);
+                    const change = Math.floor(Math.random() * 10 - 5);
+                    metric.textContent = currentValue + change;
+                }
+            });
+        }
+
+        // Action functions
+        function exportReport() {
+            console.log('Exporting B2B marketing intelligence report...');
+            alert('B2B AI Performance Report is being generated...');
+        }
+
+        function scheduleAnalysis() {
+            console.log('Opening analysis scheduler...');
+            alert('Configure automated B2B query analysis schedule');
+        }
+
+        function runOptimization() {
+            console.log('Running B2B content optimization...');
+            // Show loading state
+            document.querySelectorAll('.chart-container').forEach(container => {
+                container.style.opacity = '0.5';
+            });
+            
+            setTimeout(() => {
+                document.querySelectorAll('.chart-container').forEach(container => {
+                    container.style.opacity = '1';
+                });
+                alert('B2B content optimization completed! 15 high-impact opportunities identified.');
+            }, 2000);
+        }
+
+        function viewAlert() {
+            console.log('Viewing alert details...');
+            alert('Opening detailed analysis of AI visibility drop...');
+        }
+
+        function updateQueryChart(timeRange) {
+            const buttons = document.querySelectorAll('.card-action-btn');
+            buttons.forEach(btn => btn.classList.remove('active'));
+            event.target.classList.add('active');
+
+            // Update chart based on time range
+            console.log(`Updating query chart for ${timeRange}`);
+        }
+
+        function viewJourneyDetails() {
+            console.log('Viewing B2B journey details...');
+            alert('Opening detailed B2B decision journey analysis...');
+        }
+
+        function optimizeQuery(queryType) {
+            console.log(`Optimizing query: ${queryType}`);
+            alert(`Starting optimization for "${queryType}" queries...`);
+        }
+
+        function scanOpportunities() {
+            console.log('Scanning for new opportunities...');
+            alert('Scanning AI platforms for new B2B query opportunities...');
+        }
+
+        function implementRec(recType) {
+            console.log(`Implementing recommendation: ${recType}`);
+            alert(`Starting implementation of ${recType} optimization...`);
+        }
+
+        function generateMore() {
+            console.log('Generating more recommendations...');
+            alert('AI is analyzing your content for additional optimization opportunities...');
+        }
+
+        // Window resize handler
+        window.addEventListener('resize', () => {
+            queryPerformanceChart && queryPerformanceChart.resize();
+            marketShareChart && marketShareChart.resize();
+            contentMatrixChart && contentMatrixChart.resize();
+            industryBenchmarkChart && industryBenchmarkChart.resize();
+        });
+
+        // Close alert after 10 seconds
+        setTimeout(() => {
+            const alertBanner = document.getElementById('alertBanner');
+            if (alertBanner) {
+                alertBanner.style.opacity = '0';
+                setTimeout(() => {
+                    alertBanner.style.display = 'none';
+                }, 300);
+            }
+        }, 10000);
+    </script>
+</body>
+</html>
