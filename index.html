@@ -341,9 +341,8 @@
             const iframe = document.createElement('iframe');
             iframe.className = 'content-iframe';
             
-            // Determine the correct path based on environment
-            const basePath = window.location.pathname.includes('/geo/') ? '/geo' : '';
-            iframe.src = `${basePath}/${pageName}.html`;
+            // Use relative path for better compatibility
+            iframe.src = `${pageName}.html`;
             
             // Handle iframe load events
             iframe.onload = function() {
