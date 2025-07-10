@@ -1,0 +1,402 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GEO Dashboard Portal</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/echarts/5.4.3/echarts.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background: #0a0f1c;
+            color: #e0e0e0;
+            line-height: 1.6;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        /* Header */
+        .header {
+            background: linear-gradient(135deg, #1a237e 0%, #3949ab 100%);
+            padding: 20px 30px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.3);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .header-title {
+            font-size: 28px;
+            font-weight: bold;
+            color: #fff;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .header-icon {
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(45deg, #00CED1, #4169E1);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+        }
+
+        .header-subtitle {
+            font-size: 14px;
+            color: #b3e5fc;
+            font-weight: normal;
+        }
+
+        /* Main Layout */
+        .main-container {
+            display: flex;
+            height: calc(100vh - 80px);
+        }
+
+        /* Sidebar Navigation */
+        .sidebar {
+            width: 280px;
+            background: #1a2332;
+            box-shadow: 2px 0 10px rgba(0,0,0,0.3);
+            overflow-y: auto;
+            padding: 20px 0;
+        }
+
+        /* Menu Styles */
+        .menu-item {
+            position: relative;
+        }
+
+        .menu-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 15px 25px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border-left: 3px solid transparent;
+            font-size: 15px;
+            font-weight: 500;
+            color: #b3b3b3;
+        }
+
+        .menu-header:hover {
+            background: rgba(255,255,255,0.05);
+            color: #fff;
+            border-left-color: #00CED1;
+        }
+
+        .menu-header.active {
+            background: rgba(0,206,209,0.1);
+            color: #00CED1;
+            border-left-color: #00CED1;
+        }
+
+        .menu-arrow {
+            font-size: 12px;
+            transition: transform 0.3s ease;
+        }
+
+        .menu-header.expanded .menu-arrow {
+            transform: rotate(90deg);
+        }
+
+        /* Submenu */
+        .submenu {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s ease;
+            background: rgba(0,0,0,0.2);
+        }
+
+        .submenu.open {
+            max-height: 500px;
+        }
+
+        .submenu-item {
+            padding: 12px 25px 12px 50px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 14px;
+            color: #999;
+            border-left: 3px solid transparent;
+        }
+
+        .submenu-item:hover {
+            background: rgba(255,255,255,0.05);
+            color: #fff;
+            padding-left: 55px;
+        }
+
+        .submenu-item.active {
+            background: rgba(0,206,209,0.15);
+            color: #00CED1;
+            border-left-color: #00CED1;
+        }
+
+        /* Content Area */
+        .content-area {
+            flex: 1;
+            overflow: hidden;
+            background: #0a0f1c;
+            position: relative;
+        }
+        
+        /* iframe for loading pages */
+        .content-iframe {
+            width: 100%;
+            height: 100%;
+            border: none;
+            display: block;
+        }
+
+        /* Loading State */
+        .loading {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 400px;
+            font-size: 18px;
+            color: #666;
+        }
+
+        .loading::after {
+            content: '';
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            margin-left: 10px;
+            border: 3px solid #666;
+            border-radius: 50%;
+            border-top-color: #00CED1;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* Error State */
+        .error {
+            background: rgba(244, 67, 54, 0.1);
+            border: 1px solid #f44336;
+            color: #ff6b6b;
+            padding: 20px;
+            border-radius: 8px;
+            margin: 20px;
+            text-align: center;
+        }
+
+        /* Scrollbar Styles */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: #1a1a1a;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: #444;
+            border-radius: 4px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: #555;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .sidebar {
+                width: 240px;
+            }
+            
+            .header-title {
+                font-size: 24px;
+            }
+            
+            .content-area {
+                padding: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="header-title">
+            <div class="header-icon">🌐</div>
+            <div>
+                <div>GEO Dashboard Portal</div>
+                <div class="header-subtitle">Generative Engine Optimization Platform</div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Container -->
+    <div class="main-container">
+        <!-- Sidebar Navigation -->
+        <nav class="sidebar" id="sidebar">
+            <!-- Eureka GEO Menu -->
+            <div class="menu-item">
+                <div class="menu-header" onclick="toggleMenu(this)">
+                    <span>Eureka GEO</span>
+                    <span class="menu-arrow">▶</span>
+                </div>
+                <div class="submenu">
+                    <div class="submenu-item" data-page="eureka-geo-overview">Overview</div>
+                    <div class="submenu-item" data-page="eureka-geo-analysis">Analysis</div>
+                    <div class="submenu-item" data-page="eureka-geo-content">Content</div>
+                    <div class="submenu-item" data-page="eureka-geo-monitoring">Monitoring</div>
+                </div>
+            </div>
+
+            <!-- GEO Scene Menu -->
+            <div class="menu-item">
+                <div class="menu-header" onclick="toggleMenu(this)">
+                    <span>GEO Scene</span>
+                    <span class="menu-arrow">▶</span>
+                </div>
+                <div class="submenu">
+                    <div class="submenu-item" data-page="geo-competitive-intelligence">Competitive Intelligence</div>
+                    <div class="submenu-item" data-page="geo-brand-management">Brand Management</div>
+                    <div class="submenu-item" data-page="geo-b2b-marketing">B2B Marketing</div>
+                    <div class="submenu-item" data-page="geo-content-strategy">Content Strategy</div>
+                    <div class="submenu-item" data-page="geo-realtime-monitoring">Realtime Monitoring</div>
+                </div>
+            </div>
+
+            <!-- GEO SOP Menu -->
+            <div class="menu-item">
+                <div class="menu-header" data-page="geo-roadmaps-dataflows" onclick="loadPage('geo-roadmaps-dataflows')">
+                    <span>GEO SOP</span>
+                </div>
+            </div>
+        </nav>
+
+        <!-- Content Area -->
+        <div class="content-area" id="contentArea">
+            <!-- Dynamic content will be loaded here -->
+        </div>
+    </div>
+
+    <script>
+        // Current page tracking
+        let currentPage = '';
+
+        // Initialize on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            // Expand first menu by default
+            const firstMenu = document.querySelector('.menu-header');
+            toggleMenu(firstMenu);
+            
+            // Load default page
+            loadPage('eureka-geo-overview');
+            
+            // Add click handlers to all submenu items
+            document.querySelectorAll('.submenu-item').forEach(item => {
+                item.addEventListener('click', function() {
+                    const pageName = this.getAttribute('data-page');
+                    loadPage(pageName);
+                });
+            });
+        });
+
+        // Toggle menu open/close
+        function toggleMenu(menuHeader) {
+            // Don't toggle if it's GEO SOP (no submenu)
+            if (menuHeader.getAttribute('data-page')) {
+                return;
+            }
+            
+            menuHeader.classList.toggle('expanded');
+            const submenu = menuHeader.nextElementSibling;
+            if (submenu && submenu.classList.contains('submenu')) {
+                submenu.classList.toggle('open');
+            }
+        }
+
+        // Load page content
+        function loadPage(pageName) {
+            const contentArea = document.getElementById('contentArea');
+            
+            // Update active states
+            updateActiveStates(pageName);
+            
+            // Clear content area
+            contentArea.innerHTML = '';
+            
+            // Create iframe
+            const iframe = document.createElement('iframe');
+            iframe.className = 'content-iframe';
+            iframe.src = `/${pageName}.html`;
+            
+            // Handle iframe load events
+            iframe.onload = function() {
+                console.log('Page loaded:', pageName);
+                currentPage = pageName;
+                
+                // Update browser history
+                history.pushState({ page: pageName }, '', `#${pageName}`);
+            };
+            
+            iframe.onerror = function() {
+                contentArea.innerHTML = `
+                    <div class="error">
+                        <h3>Failed to load page</h3>
+                        <p>Could not load ${pageName}.html</p>
+                    </div>
+                `;
+            };
+            
+            // Add iframe to content area
+            contentArea.appendChild(iframe);
+        }
+
+        // Update active menu states
+        function updateActiveStates(pageName) {
+            // Remove all active states
+            document.querySelectorAll('.menu-header, .submenu-item').forEach(item => {
+                item.classList.remove('active');
+            });
+            
+            // Find and activate the clicked item
+            const clickedItem = document.querySelector(`[data-page="${pageName}"]`);
+            if (clickedItem) {
+                clickedItem.classList.add('active');
+                
+                // If it's a submenu item, also activate its parent
+                if (clickedItem.classList.contains('submenu-item')) {
+                    const parentMenu = clickedItem.closest('.menu-item').querySelector('.menu-header');
+                    if (parentMenu) {
+                        parentMenu.classList.add('active');
+                        // Ensure submenu is open
+                        if (!parentMenu.classList.contains('expanded')) {
+                            toggleMenu(parentMenu);
+                        }
+                    }
+                }
+            }
+        }
+
+
+        // Handle browser back/forward
+        window.addEventListener('popstate', function(event) {
+            if (event.state && event.state.page) {
+                loadPage(event.state.page);
+            }
+        });
+    </script>
+</body>
+</html>

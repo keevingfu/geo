@@ -1,0 +1,1847 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GEO Real-time Monitoring - AI Search Trends & Algorithm Adaptation</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/echarts/5.4.3/echarts.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: #0a0e1a;
+            color: #e0e0e0;
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+
+        /* Header Styles */
+        .header {
+            background: linear-gradient(135deg, #00d4ff 0%, #0099cc 100%);
+            padding: 15px 0;
+            box-shadow: 0 2px 20px rgba(0, 212, 255, 0.3);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+
+        .header-content {
+            max-width: 1600px;
+            margin: 0 auto;
+            padding: 0 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-size: 24px;
+            font-weight: bold;
+            color: #fff;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .logo-icon {
+            width: 40px;
+            height: 40px;
+            background: #fff;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .logo-icon::before {
+            content: '';
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle, transparent 30%, #00d4ff 70%);
+            animation: pulse-radar 2s infinite;
+        }
+
+        @keyframes pulse-radar {
+            0% {
+                transform: scale(0.8);
+                opacity: 1;
+            }
+            100% {
+                transform: scale(2);
+                opacity: 0;
+            }
+        }
+
+        .logo-icon span {
+            position: relative;
+            z-index: 1;
+            color: #0099cc;
+            font-weight: bold;
+            font-size: 18px;
+        }
+
+        .nav-actions {
+            display: flex;
+            gap: 15px;
+            align-items: center;
+        }
+
+        .status-indicator {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 16px;
+            background: rgba(0, 255, 0, 0.1);
+            border: 1px solid rgba(0, 255, 0, 0.3);
+            border-radius: 20px;
+            font-size: 14px;
+        }
+
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            background: #00ff00;
+            border-radius: 50%;
+            animation: blink 1s infinite;
+        }
+
+        @keyframes blink {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.3; }
+        }
+
+        .action-btn {
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            color: #fff;
+            padding: 8px 16px;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-size: 14px;
+        }
+
+        .action-btn:hover {
+            background: rgba(255, 255, 255, 0.2);
+            transform: translateY(-2px);
+        }
+
+        .action-btn.alert {
+            background: #ff4444;
+            border: none;
+            animation: alert-pulse 1s infinite;
+        }
+
+        @keyframes alert-pulse {
+            0%, 100% { box-shadow: 0 0 0 0 rgba(255, 68, 68, 0.7); }
+            50% { box-shadow: 0 0 0 10px rgba(255, 68, 68, 0); }
+        }
+
+        /* Main Container */
+        .container {
+            max-width: 1600px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        /* Alert Banner */
+        .alert-section {
+            margin-bottom: 20px;
+        }
+
+        .alert-banner {
+            background: linear-gradient(135deg, #ff4444 0%, #cc0000 100%);
+            color: white;
+            padding: 15px 20px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            animation: slide-in 0.5s ease-out;
+        }
+
+        @keyframes slide-in {
+            from {
+                transform: translateX(-100%);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+
+        .alert-icon {
+            font-size: 24px;
+            animation: shake 0.5s infinite;
+        }
+
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-5px); }
+            75% { transform: translateX(5px); }
+        }
+
+        .alert-content {
+            flex: 1;
+        }
+
+        .alert-title {
+            font-weight: 600;
+            margin-bottom: 5px;
+            font-size: 16px;
+        }
+
+        .alert-message {
+            font-size: 14px;
+            opacity: 0.9;
+        }
+
+        .alert-action {
+            background: white;
+            color: #ff4444;
+            padding: 8px 16px;
+            border-radius: 6px;
+            border: none;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .alert-action:hover {
+            transform: scale(1.05);
+        }
+
+        /* Real-time Metrics Grid */
+        .metrics-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .metric-card {
+            background: #1a1f2e;
+            border-radius: 12px;
+            padding: 20px;
+            position: relative;
+            overflow: hidden;
+            border: 1px solid #2a3441;
+            transition: all 0.3s;
+        }
+
+        .metric-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 5px 20px rgba(0, 212, 255, 0.2);
+        }
+
+        .metric-card.critical {
+            border-color: #ff4444;
+            animation: critical-pulse 2s infinite;
+        }
+
+        @keyframes critical-pulse {
+            0%, 100% { box-shadow: 0 0 0 0 rgba(255, 68, 68, 0.4); }
+            50% { box-shadow: 0 0 0 10px rgba(255, 68, 68, 0); }
+        }
+
+        .metric-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        .metric-title {
+            font-size: 14px;
+            color: #8892b0;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .metric-badge {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+            background: rgba(0, 212, 255, 0.1);
+        }
+
+        .metric-value {
+            font-size: 32px;
+            font-weight: bold;
+            color: #fff;
+            margin-bottom: 5px;
+        }
+
+        .metric-change {
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .metric-change.positive {
+            color: #00ff88;
+        }
+
+        .metric-change.negative {
+            color: #ff4444;
+        }
+
+        .metric-sparkline {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 40px;
+            opacity: 0.3;
+        }
+
+        /* Main Dashboard Grid */
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+
+        .dashboard-card {
+            background: #1a1f2e;
+            border-radius: 12px;
+            padding: 25px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+        }
+
+        .dashboard-card.full-width {
+            grid-column: 1 / -1;
+        }
+
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .card-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: #fff;
+        }
+
+        .card-subtitle {
+            font-size: 14px;
+            color: #8892b0;
+            margin-top: 5px;
+        }
+
+        .card-actions {
+            display: flex;
+            gap: 10px;
+        }
+
+        .card-action-btn {
+            background: #2a3441;
+            border: none;
+            color: #fff;
+            padding: 6px 12px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 12px;
+            transition: background 0.3s;
+        }
+
+        .card-action-btn:hover {
+            background: #3a4451;
+        }
+
+        .card-action-btn.active {
+            background: #00d4ff;
+            color: #0a0e1a;
+        }
+
+        /* Chart Containers */
+        .chart-container {
+            height: 350px;
+        }
+
+        .small-chart-container {
+            height: 250px;
+        }
+
+        /* Live Feed */
+        .live-feed {
+            max-height: 400px;
+            overflow-y: auto;
+        }
+
+        .feed-item {
+            padding: 15px;
+            border-bottom: 1px solid #2a3441;
+            display: flex;
+            align-items: start;
+            gap: 15px;
+            transition: all 0.3s;
+            animation: feed-appear 0.5s ease-out;
+        }
+
+        @keyframes feed-appear {
+            from {
+                transform: translateX(-20px);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+
+        .feed-item:hover {
+            background: rgba(0, 212, 255, 0.05);
+        }
+
+        .feed-item:last-child {
+            border-bottom: none;
+        }
+
+        .feed-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            flex-shrink: 0;
+        }
+
+        .feed-icon.trend {
+            background: rgba(0, 255, 136, 0.2);
+        }
+
+        .feed-icon.alert {
+            background: rgba(255, 68, 68, 0.2);
+        }
+
+        .feed-icon.algorithm {
+            background: rgba(138, 92, 246, 0.2);
+        }
+
+        .feed-content {
+            flex: 1;
+        }
+
+        .feed-title {
+            font-size: 14px;
+            font-weight: 600;
+            color: #fff;
+            margin-bottom: 5px;
+        }
+
+        .feed-desc {
+            font-size: 13px;
+            color: #8892b0;
+            line-height: 1.4;
+        }
+
+        .feed-meta {
+            display: flex;
+            gap: 15px;
+            margin-top: 8px;
+            font-size: 12px;
+            color: #6b7280;
+        }
+
+        .feed-time {
+            font-size: 12px;
+            color: #6b7280;
+        }
+
+        /* Trend Analysis Section */
+        .trend-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+
+        .trend-card {
+            background: #1a1f2e;
+            border-radius: 12px;
+            padding: 20px;
+            border: 1px solid #2a3441;
+            transition: all 0.3s;
+        }
+
+        .trend-card:hover {
+            border-color: #00d4ff;
+            transform: translateY(-3px);
+        }
+
+        .trend-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .trend-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: #fff;
+        }
+
+        .trend-badge {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+
+        .trend-badge.rising {
+            background: rgba(0, 255, 136, 0.2);
+            color: #00ff88;
+        }
+
+        .trend-badge.falling {
+            background: rgba(255, 68, 68, 0.2);
+            color: #ff4444;
+        }
+
+        .trend-badge.stable {
+            background: rgba(255, 184, 36, 0.2);
+            color: #ffb824;
+        }
+
+        .trend-queries {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .query-item {
+            background: #0a0e1a;
+            padding: 10px 15px;
+            border-radius: 8px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 14px;
+        }
+
+        .query-text {
+            color: #e0e0e0;
+        }
+
+        .query-volume {
+            color: #00d4ff;
+            font-weight: 600;
+        }
+
+        /* Algorithm Changes Section */
+        .algorithm-timeline {
+            position: relative;
+            padding: 20px 0;
+        }
+
+        .timeline-line {
+            position: absolute;
+            left: 20px;
+            top: 0;
+            bottom: 0;
+            width: 2px;
+            background: #2a3441;
+        }
+
+        .timeline-item {
+            position: relative;
+            padding-left: 50px;
+            margin-bottom: 30px;
+            animation: timeline-appear 0.5s ease-out;
+        }
+
+        @keyframes timeline-appear {
+            from {
+                transform: translateY(20px);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        .timeline-dot {
+            position: absolute;
+            left: 12px;
+            top: 0;
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+            background: #00d4ff;
+            border: 3px solid #1a1f2e;
+        }
+
+        .timeline-dot.critical {
+            background: #ff4444;
+            animation: pulse 1s infinite;
+        }
+
+        .timeline-content {
+            background: #0a0e1a;
+            padding: 15px;
+            border-radius: 8px;
+            border: 1px solid #2a3441;
+        }
+
+        .timeline-title {
+            font-size: 14px;
+            font-weight: 600;
+            color: #fff;
+            margin-bottom: 5px;
+        }
+
+        .timeline-desc {
+            font-size: 13px;
+            color: #8892b0;
+            margin-bottom: 10px;
+        }
+
+        .timeline-impact {
+            display: flex;
+            gap: 15px;
+            font-size: 12px;
+        }
+
+        .impact-item {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            color: #6b7280;
+        }
+
+        .impact-item.high {
+            color: #ff4444;
+        }
+
+        .impact-item.medium {
+            color: #ffb824;
+        }
+
+        /* Quick Actions Panel */
+        .actions-panel {
+            background: #1a1f2e;
+            border-radius: 12px;
+            padding: 25px;
+            margin-bottom: 20px;
+        }
+
+        .actions-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .action-card {
+            background: #0a0e1a;
+            border-radius: 8px;
+            padding: 20px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s;
+            border: 1px solid transparent;
+        }
+
+        .action-card:hover {
+            border-color: #00d4ff;
+            transform: translateY(-3px);
+        }
+
+        .action-icon {
+            font-size: 32px;
+            margin-bottom: 10px;
+        }
+
+        .action-title {
+            font-size: 14px;
+            font-weight: 600;
+            color: #fff;
+            margin-bottom: 5px;
+        }
+
+        .action-desc {
+            font-size: 12px;
+            color: #8892b0;
+        }
+
+        /* Predictive Insights */
+        .predictions-section {
+            background: #1a1f2e;
+            border-radius: 12px;
+            padding: 25px;
+            margin-bottom: 20px;
+        }
+
+        .prediction-cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
+
+        .prediction-card {
+            background: #0a0e1a;
+            border-radius: 8px;
+            padding: 20px;
+            border-left: 4px solid #00d4ff;
+        }
+
+        .prediction-card.warning {
+            border-left-color: #ffb824;
+        }
+
+        .prediction-card.critical {
+            border-left-color: #ff4444;
+        }
+
+        .prediction-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .prediction-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: #fff;
+        }
+
+        .prediction-confidence {
+            font-size: 24px;
+            font-weight: bold;
+            color: #00d4ff;
+        }
+
+        .prediction-desc {
+            font-size: 14px;
+            color: #8892b0;
+            line-height: 1.5;
+            margin-bottom: 15px;
+        }
+
+        .prediction-action {
+            background: #2a3441;
+            border: none;
+            color: #fff;
+            padding: 10px 20px;
+            border-radius: 6px;
+            cursor: pointer;
+            width: 100%;
+            transition: all 0.3s;
+            font-weight: 600;
+        }
+
+        .prediction-action:hover {
+            background: #00d4ff;
+            color: #0a0e1a;
+        }
+
+        /* Multi-Platform Monitor */
+        .platform-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .platform-card {
+            background: #0a0e1a;
+            border-radius: 8px;
+            padding: 20px;
+            border: 1px solid #2a3441;
+            transition: all 0.3s;
+        }
+
+        .platform-card:hover {
+            border-color: #00d4ff;
+        }
+
+        .platform-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .platform-name {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 16px;
+            font-weight: 600;
+            color: #fff;
+        }
+
+        .platform-icon {
+            width: 30px;
+            height: 30px;
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+        }
+
+        .platform-icon.chatgpt {
+            background: #10b981;
+        }
+
+        .platform-icon.claude {
+            background: #8b5cf6;
+        }
+
+        .platform-icon.perplexity {
+            background: #3b82f6;
+        }
+
+        .platform-icon.bard {
+            background: #fbbf24;
+        }
+
+        .platform-status {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: #00ff88;
+        }
+
+        .platform-status.warning {
+            background: #ffb824;
+        }
+
+        .platform-status.error {
+            background: #ff4444;
+        }
+
+        .platform-metrics {
+            display: grid;
+            gap: 10px;
+        }
+
+        .platform-metric {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 14px;
+        }
+
+        .platform-metric-label {
+            color: #8892b0;
+        }
+
+        .platform-metric-value {
+            color: #fff;
+            font-weight: 600;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 1200px) {
+            .dashboard-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .trend-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .metrics-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .platform-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .actions-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .prediction-cards {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* Loading States */
+        .loading {
+            position: relative;
+            overflow: hidden;
+        }
+
+        .loading::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent 0%, rgba(0, 212, 255, 0.2) 50%, transparent 100%);
+            animation: loading-sweep 2s infinite;
+        }
+
+        @keyframes loading-sweep {
+            0% { left: -100%; }
+            100% { left: 100%; }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="header-content">
+            <div class="logo">
+                <div class="logo-icon">
+                    <span>RT</span>
+                </div>
+                <span>GEO Real-time AI Monitoring</span>
+            </div>
+            <div class="nav-actions">
+                <div class="status-indicator">
+                    <span class="status-dot"></span>
+                    <span>Live Monitoring Active</span>
+                </div>
+                <button class="action-btn" onclick="configureAlerts()">Configure Alerts</button>
+                <button class="action-btn" onclick="exportReport()">Export Report</button>
+                <button class="action-btn alert" onclick="viewCritical()">3 Critical Alerts</button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="container">
+        <!-- Alert Section -->
+        <div class="alert-section" id="alertSection">
+            <div class="alert-banner">
+                <div class="alert-icon">⚠️</div>
+                <div class="alert-content">
+                    <div class="alert-title">Algorithm Update Detected - Immediate Action Required</div>
+                    <div class="alert-message">ChatGPT has updated its ranking algorithm. Your content visibility dropped 23% in the last hour. Click to view recommended adjustments.</div>
+                </div>
+                <button class="alert-action" onclick="handleAlert()">Take Action</button>
+            </div>
+        </div>
+
+        <!-- Real-time Metrics -->
+        <div class="metrics-grid">
+            <div class="metric-card">
+                <div class="metric-header">
+                    <div class="metric-title">Query Volume</div>
+                    <div class="metric-badge">📊</div>
+                </div>
+                <div class="metric-value" id="queryVolume">12,847</div>
+                <div class="metric-change positive">
+                    <span>↑</span> +15.2% from 1hr ago
+                </div>
+                <div class="metric-sparkline" id="sparkline1"></div>
+            </div>
+
+            <div class="metric-card critical">
+                <div class="metric-header">
+                    <div class="metric-title">Visibility Score</div>
+                    <div class="metric-badge">👁️</div>
+                </div>
+                <div class="metric-value" id="visibilityScore">68%</div>
+                <div class="metric-change negative">
+                    <span>↓</span> -23% from baseline
+                </div>
+                <div class="metric-sparkline" id="sparkline2"></div>
+            </div>
+
+            <div class="metric-card">
+                <div class="metric-header">
+                    <div class="metric-title">AI Platforms</div>
+                    <div class="metric-badge">🤖</div>
+                </div>
+                <div class="metric-value" id="platformCount">8/8</div>
+                <div class="metric-change positive">
+                    <span>✓</span> All platforms tracked
+                </div>
+                <div class="metric-sparkline" id="sparkline3"></div>
+            </div>
+
+            <div class="metric-card">
+                <div class="metric-header">
+                    <div class="metric-title">Response Time</div>
+                    <div class="metric-badge">⚡</div>
+                </div>
+                <div class="metric-value" id="responseTime">0.8s</div>
+                <div class="metric-change positive">
+                    <span>↑</span> 120ms faster
+                </div>
+                <div class="metric-sparkline" id="sparkline4"></div>
+            </div>
+
+            <div class="metric-card">
+                <div class="metric-header">
+                    <div class="metric-title">Trend Changes</div>
+                    <div class="metric-badge">📈</div>
+                </div>
+                <div class="metric-value" id="trendChanges">47</div>
+                <div class="metric-change negative">
+                    <span>⚠️</span> 12 require action
+                </div>
+                <div class="metric-sparkline" id="sparkline5"></div>
+            </div>
+
+            <div class="metric-card">
+                <div class="metric-header">
+                    <div class="metric-title">Algorithm Updates</div>
+                    <div class="metric-badge">🔄</div>
+                </div>
+                <div class="metric-value" id="algorithmUpdates">3</div>
+                <div class="metric-change negative">
+                    <span>!</span> In last 24hrs
+                </div>
+                <div class="metric-sparkline" id="sparkline6"></div>
+            </div>
+        </div>
+
+        <!-- Main Dashboard -->
+        <div class="dashboard-grid">
+            <!-- Real-time Query Stream -->
+            <div class="dashboard-card">
+                <div class="card-header">
+                    <div>
+                        <h3 class="card-title">Real-time AI Query Stream</h3>
+                        <p class="card-subtitle">Live tracking of AI search queries</p>
+                    </div>
+                    <div class="card-actions">
+                        <button class="card-action-btn active" onclick="filterStream('all')">All</button>
+                        <button class="card-action-btn" onclick="filterStream('trending')">Trending</button>
+                        <button class="card-action-btn" onclick="filterStream('critical')">Critical</button>
+                    </div>
+                </div>
+                <div id="query-stream-chart" class="chart-container"></div>
+            </div>
+
+            <!-- Live Activity Feed -->
+            <div class="dashboard-card">
+                <div class="card-header">
+                    <h3 class="card-title">Live Activity Feed</h3>
+                    <span style="font-size: 14px; color: #00ff88;">● Real-time</span>
+                </div>
+                <div class="live-feed" id="live-feed">
+                    <div class="feed-item">
+                        <div class="feed-icon trend">📈</div>
+                        <div class="feed-content">
+                            <div class="feed-title">Trending Query Spike</div>
+                            <div class="feed-desc">"AI implementation best practices" increased 340% in the last 30 minutes</div>
+                            <div class="feed-meta">
+                                <span>🔥 High Priority</span>
+                                <span>📊 2.3K queries/hr</span>
+                            </div>
+                        </div>
+                        <div class="feed-time">Just now</div>
+                    </div>
+                    <div class="feed-item">
+                        <div class="feed-icon alert">⚠️</div>
+                        <div class="feed-content">
+                            <div class="feed-title">Visibility Drop Alert</div>
+                            <div class="feed-desc">Your content dropped from position #1 to #4 for "enterprise AI solutions"</div>
+                            <div class="feed-meta">
+                                <span>💔 23% CTR loss</span>
+                                <span>🎯 Competitor: TechCorp</span>
+                            </div>
+                        </div>
+                        <div class="feed-time">2 min ago</div>
+                    </div>
+                    <div class="feed-item">
+                        <div class="feed-icon algorithm">🤖</div>
+                        <div class="feed-content">
+                            <div class="feed-title">Claude Algorithm Update</div>
+                            <div class="feed-desc">Claude now prioritizes structured data and technical depth in responses</div>
+                            <div class="feed-meta">
+                                <span>🔄 Major update</span>
+                                <span>📝 15 content pieces affected</span>
+                            </div>
+                        </div>
+                        <div class="feed-time">8 min ago</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Trending Queries Analysis -->
+        <div class="trend-grid">
+            <div class="trend-card">
+                <div class="trend-header">
+                    <h4 class="trend-title">🚀 Rising Fast</h4>
+                    <span class="trend-badge rising">+245%</span>
+                </div>
+                <div class="trend-queries">
+                    <div class="query-item">
+                        <span class="query-text">AI governance frameworks</span>
+                        <span class="query-volume">8.2K/hr</span>
+                    </div>
+                    <div class="query-item">
+                        <span class="query-text">Prompt engineering certification</span>
+                        <span class="query-volume">5.7K/hr</span>
+                    </div>
+                    <div class="query-item">
+                        <span class="query-text">AI ROI calculator tools</span>
+                        <span class="query-volume">4.3K/hr</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="trend-card">
+                <div class="trend-header">
+                    <h4 class="trend-title">📉 Declining Rapidly</h4>
+                    <span class="trend-badge falling">-186%</span>
+                </div>
+                <div class="trend-queries">
+                    <div class="query-item">
+                        <span class="query-text">Basic chatbot tutorials</span>
+                        <span class="query-volume">1.2K/hr</span>
+                    </div>
+                    <div class="query-item">
+                        <span class="query-text">GPT-3 vs GPT-4 comparison</span>
+                        <span class="query-volume">890/hr</span>
+                    </div>
+                    <div class="query-item">
+                        <span class="query-text">AI hype cycle 2023</span>
+                        <span class="query-volume">567/hr</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="trend-card">
+                <div class="trend-header">
+                    <h4 class="trend-title">⚡ Sudden Spikes</h4>
+                    <span class="trend-badge rising">NEW</span>
+                </div>
+                <div class="trend-queries">
+                    <div class="query-item">
+                        <span class="query-text">AI compliance regulations EU</span>
+                        <span class="query-volume">12.5K/hr</span>
+                    </div>
+                    <div class="query-item">
+                        <span class="query-text">Emergency AI failsafe systems</span>
+                        <span class="query-volume">9.8K/hr</span>
+                    </div>
+                    <div class="query-item">
+                        <span class="query-text">Real-time AI monitoring tools</span>
+                        <span class="query-volume">7.2K/hr</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Algorithm Change Timeline -->
+        <div class="dashboard-card full-width">
+            <div class="card-header">
+                <h3 class="card-title">Algorithm Change Timeline</h3>
+                <button class="card-action-btn" onclick="viewFullTimeline()">View Full Timeline</button>
+            </div>
+            <div class="algorithm-timeline">
+                <div class="timeline-line"></div>
+                <div class="timeline-item">
+                    <div class="timeline-dot critical"></div>
+                    <div class="timeline-content">
+                        <div class="timeline-title">ChatGPT Ranking Algorithm Update</div>
+                        <div class="timeline-desc">Major changes to content evaluation criteria, prioritizing recent data and authoritative sources</div>
+                        <div class="timeline-impact">
+                            <span class="impact-item high">🎯 High Impact</span>
+                            <span class="impact-item">📄 42 pages affected</span>
+                            <span class="impact-item">⏰ 1 hour ago</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="timeline-item">
+                    <div class="timeline-dot"></div>
+                    <div class="timeline-content">
+                        <div class="timeline-title">Perplexity Source Verification Update</div>
+                        <div class="timeline-desc">Enhanced fact-checking and source credibility requirements</div>
+                        <div class="timeline-impact">
+                            <span class="impact-item medium">⚡ Medium Impact</span>
+                            <span class="impact-item">📄 18 pages affected</span>
+                            <span class="impact-item">⏰ 4 hours ago</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="timeline-item">
+                    <div class="timeline-dot"></div>
+                    <div class="timeline-content">
+                        <div class="timeline-title">Claude Context Window Expansion</div>
+                        <div class="timeline-desc">Increased context processing allows for more comprehensive content analysis</div>
+                        <div class="timeline-impact">
+                            <span class="impact-item">✅ Positive Impact</span>
+                            <span class="impact-item">📄 All content benefits</span>
+                            <span class="impact-item">⏰ 12 hours ago</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Quick Actions Panel -->
+        <div class="actions-panel">
+            <div class="card-header">
+                <h3 class="card-title">Quick Response Actions</h3>
+                <span style="font-size: 14px; color: #8892b0;">Immediate actions based on current trends</span>
+            </div>
+            <div class="actions-grid">
+                <div class="action-card" onclick="quickAction('optimize')">
+                    <div class="action-icon">⚡</div>
+                    <div class="action-title">Emergency Optimize</div>
+                    <div class="action-desc">Fix 23 critical visibility issues</div>
+                </div>
+                <div class="action-card" onclick="quickAction('content')">
+                    <div class="action-icon">📝</div>
+                    <div class="action-title">Create Trending Content</div>
+                    <div class="action-desc">12 high-opportunity topics</div>
+                </div>
+                <div class="action-card" onclick="quickAction('schema')">
+                    <div class="action-icon">🏗️</div>
+                    <div class="action-title">Update Schema</div>
+                    <div class="action-desc">Match new algorithm requirements</div>
+                </div>
+                <div class="action-card" onclick="quickAction('monitor')">
+                    <div class="action-icon">🔍</div>
+                    <div class="action-title">Deep Scan</div>
+                    <div class="action-desc">Comprehensive competitor analysis</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Predictive Insights -->
+        <div class="predictions-section">
+            <div class="card-header">
+                <h3 class="card-title">AI Predictive Insights</h3>
+                <span style="font-size: 14px; color: #8892b0;">Next 24-48 hours forecast</span>
+            </div>
+            <div class="prediction-cards">
+                <div class="prediction-card critical">
+                    <div class="prediction-header">
+                        <h4 class="prediction-title">Traffic Drop Warning</h4>
+                        <span class="prediction-confidence">87%</span>
+                    </div>
+                    <p class="prediction-desc">Based on current algorithm changes, expect 15-20% traffic reduction if no action taken within 6 hours.</p>
+                    <button class="prediction-action" onclick="preventDrop()">Prevent Drop</button>
+                </div>
+
+                <div class="prediction-card warning">
+                    <div class="prediction-header">
+                        <h4 class="prediction-title">Emerging Topic Alert</h4>
+                        <span class="prediction-confidence">92%</span>
+                    </div>
+                    <p class="prediction-desc">"AI Safety Protocols" will become a trending topic in 12-18 hours. First-mover advantage available.</p>
+                    <button class="prediction-action" onclick="captureOpportunity()">Capture Opportunity</button>
+                </div>
+
+                <div class="prediction-card">
+                    <div class="prediction-header">
+                        <h4 class="prediction-title">Competitor Movement</h4>
+                        <span class="prediction-confidence">78%</span>
+                    </div>
+                    <p class="prediction-desc">3 competitors are optimizing for "enterprise AI" queries. Your position at risk in 24 hours.</p>
+                    <button class="prediction-action" onclick="defendPosition()">Defend Position</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Multi-Platform Performance -->
+        <div class="dashboard-card full-width">
+            <div class="card-header">
+                <h3 class="card-title">Multi-Platform Performance Monitor</h3>
+                <span style="font-size: 14px; color: #8892b0;">Real-time performance across all AI platforms</span>
+            </div>
+            <div id="platform-performance-chart" class="chart-container"></div>
+        </div>
+
+        <!-- Platform Status Grid -->
+        <div class="dashboard-card full-width">
+            <div class="card-header">
+                <h3 class="card-title">AI Platform Status</h3>
+            </div>
+            <div class="platform-grid">
+                <div class="platform-card">
+                    <div class="platform-header">
+                        <div class="platform-name">
+                            <div class="platform-icon chatgpt">🤖</div>
+                            ChatGPT
+                        </div>
+                        <div class="platform-status warning"></div>
+                    </div>
+                    <div class="platform-metrics">
+                        <div class="platform-metric">
+                            <span class="platform-metric-label">Visibility</span>
+                            <span class="platform-metric-value">72%</span>
+                        </div>
+                        <div class="platform-metric">
+                            <span class="platform-metric-label">Response Rate</span>
+                            <span class="platform-metric-value">1.2s</span>
+                        </div>
+                        <div class="platform-metric">
+                            <span class="platform-metric-label">Citations/hr</span>
+                            <span class="platform-metric-value">342</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="platform-card">
+                    <div class="platform-header">
+                        <div class="platform-name">
+                            <div class="platform-icon claude">🧠</div>
+                            Claude
+                        </div>
+                        <div class="platform-status"></div>
+                    </div>
+                    <div class="platform-metrics">
+                        <div class="platform-metric">
+                            <span class="platform-metric-label">Visibility</span>
+                            <span class="platform-metric-value">89%</span>
+                        </div>
+                        <div class="platform-metric">
+                            <span class="platform-metric-label">Response Rate</span>
+                            <span class="platform-metric-value">0.8s</span>
+                        </div>
+                        <div class="platform-metric">
+                            <span class="platform-metric-label">Citations/hr</span>
+                            <span class="platform-metric-value">256</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="platform-card">
+                    <div class="platform-header">
+                        <div class="platform-name">
+                            <div class="platform-icon perplexity">🔍</div>
+                            Perplexity
+                        </div>
+                        <div class="platform-status"></div>
+                    </div>
+                    <div class="platform-metrics">
+                        <div class="platform-metric">
+                            <span class="platform-metric-label">Visibility</span>
+                            <span class="platform-metric-value">94%</span>
+                        </div>
+                        <div class="platform-metric">
+                            <span class="platform-metric-label">Response Rate</span>
+                            <span class="platform-metric-value">0.6s</span>
+                        </div>
+                        <div class="platform-metric">
+                            <span class="platform-metric-label">Citations/hr</span>
+                            <span class="platform-metric-value">189</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="platform-card">
+                    <div class="platform-header">
+                        <div class="platform-name">
+                            <div class="platform-icon bard">💫</div>
+                            Bard
+                        </div>
+                        <div class="platform-status error"></div>
+                    </div>
+                    <div class="platform-metrics">
+                        <div class="platform-metric">
+                            <span class="platform-metric-label">Visibility</span>
+                            <span class="platform-metric-value">45%</span>
+                        </div>
+                        <div class="platform-metric">
+                            <span class="platform-metric-label">Response Rate</span>
+                            <span class="platform-metric-value">2.1s</span>
+                        </div>
+                        <div class="platform-metric">
+                            <span class="platform-metric-label">Citations/hr</span>
+                            <span class="platform-metric-value">67</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Trend Velocity Chart -->
+        <div class="dashboard-card full-width">
+            <div class="card-header">
+                <h3 class="card-title">Query Trend Velocity</h3>
+                <p class="card-subtitle">Real-time acceleration/deceleration of search trends</p>
+            </div>
+            <div id="trend-velocity-chart" class="chart-container"></div>
+        </div>
+    </main>
+
+    <script>
+        // Initialize all charts
+        let queryStreamChart, platformPerformanceChart, trendVelocityChart;
+        let liveDataInterval, metricsInterval;
+
+        // Initialize on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            initializeCharts();
+            startRealtimeMonitoring();
+            initializeSparklines();
+        });
+
+        function initializeCharts() {
+            // Query Stream Chart
+            queryStreamChart = echarts.init(document.getElementById('query-stream-chart'));
+            const queryStreamOption = {
+                tooltip: {
+                    trigger: 'axis',
+                    backgroundColor: 'rgba(0, 0, 0, 0.8)',
+                    textStyle: { color: '#fff' }
+                },
+                grid: {
+                    left: '3%',
+                    right: '4%',
+                    bottom: '3%',
+                    top: '10%',
+                    containLabel: true
+                },
+                xAxis: {
+                    type: 'time',
+                    splitLine: { show: false },
+                    axisLine: { lineStyle: { color: '#2a3441' } },
+                    axisLabel: { color: '#8892b0' }
+                },
+                yAxis: {
+                    type: 'value',
+                    name: 'Queries/min',
+                    nameLocation: 'middle',
+                    nameGap: 30,
+                    axisLine: { lineStyle: { color: '#2a3441' } },
+                    axisLabel: { color: '#8892b0' },
+                    splitLine: { lineStyle: { color: '#1a1f2e' } }
+                },
+                series: [
+                    {
+                        name: 'Total Queries',
+                        type: 'line',
+                        smooth: true,
+                        symbol: 'none',
+                        sampling: 'lttb',
+                        itemStyle: { color: '#00d4ff' },
+                        areaStyle: {
+                            color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
+                                { offset: 0, color: 'rgba(0, 212, 255, 0.3)' },
+                                { offset: 1, color: 'rgba(0, 212, 255, 0.05)' }
+                            ])
+                        },
+                        data: generateRealtimeData()
+                    },
+                    {
+                        name: 'Critical Queries',
+                        type: 'line',
+                        smooth: true,
+                        symbol: 'none',
+                        sampling: 'lttb',
+                        itemStyle: { color: '#ff4444' },
+                        data: generateRealtimeData(0.3)
+                    }
+                ]
+            };
+            queryStreamChart.setOption(queryStreamOption);
+
+            // Platform Performance Chart
+            platformPerformanceChart = echarts.init(document.getElementById('platform-performance-chart'));
+            const platformPerformanceOption = {
+                tooltip: {
+                    trigger: 'axis',
+                    backgroundColor: 'rgba(0, 0, 0, 0.8)',
+                    textStyle: { color: '#fff' },
+                    axisPointer: { type: 'cross' }
+                },
+                legend: {
+                    data: ['ChatGPT', 'Claude', 'Perplexity', 'Bard'],
+                    textStyle: { color: '#8892b0' },
+                    top: 10
+                },
+                grid: {
+                    left: '3%',
+                    right: '4%',
+                    bottom: '3%',
+                    top: '15%',
+                    containLabel: true
+                },
+                xAxis: {
+                    type: 'time',
+                    splitLine: { show: false },
+                    axisLine: { lineStyle: { color: '#2a3441' } },
+                    axisLabel: { color: '#8892b0' }
+                },
+                yAxis: {
+                    type: 'value',
+                    name: 'Performance Score',
+                    max: 100,
+                    axisLine: { lineStyle: { color: '#2a3441' } },
+                    axisLabel: { color: '#8892b0', formatter: '{value}%' },
+                    splitLine: { lineStyle: { color: '#1a1f2e' } }
+                },
+                series: [
+                    {
+                        name: 'ChatGPT',
+                        type: 'line',
+                        smooth: true,
+                        symbol: 'circle',
+                        symbolSize: 4,
+                        itemStyle: { color: '#10b981' },
+                        data: generatePlatformData(72)
+                    },
+                    {
+                        name: 'Claude',
+                        type: 'line',
+                        smooth: true,
+                        symbol: 'circle',
+                        symbolSize: 4,
+                        itemStyle: { color: '#8b5cf6' },
+                        data: generatePlatformData(89)
+                    },
+                    {
+                        name: 'Perplexity',
+                        type: 'line',
+                        smooth: true,
+                        symbol: 'circle',
+                        symbolSize: 4,
+                        itemStyle: { color: '#3b82f6' },
+                        data: generatePlatformData(94)
+                    },
+                    {
+                        name: 'Bard',
+                        type: 'line',
+                        smooth: true,
+                        symbol: 'circle',
+                        symbolSize: 4,
+                        itemStyle: { color: '#fbbf24' },
+                        data: generatePlatformData(45)
+                    }
+                ]
+            };
+            platformPerformanceChart.setOption(platformPerformanceOption);
+
+            // Trend Velocity Chart
+            trendVelocityChart = echarts.init(document.getElementById('trend-velocity-chart'));
+            const trendVelocityOption = {
+                tooltip: {
+                    trigger: 'item',
+                    backgroundColor: 'rgba(0, 0, 0, 0.8)',
+                    textStyle: { color: '#fff' }
+                },
+                grid: {
+                    left: '3%',
+                    right: '4%',
+                    bottom: '3%',
+                    top: '10%',
+                    containLabel: true
+                },
+                xAxis: {
+                    type: 'value',
+                    name: 'Query Volume (K/hr)',
+                    nameLocation: 'middle',
+                    nameGap: 30,
+                    max: 15,
+                    axisLine: { lineStyle: { color: '#2a3441' } },
+                    axisLabel: { color: '#8892b0' },
+                    splitLine: { lineStyle: { color: '#1a1f2e' } }
+                },
+                yAxis: {
+                    type: 'value',
+                    name: 'Velocity (%/hr)',
+                    nameLocation: 'middle',
+                    nameGap: 40,
+                    min: -100,
+                    max: 300,
+                    axisLine: { lineStyle: { color: '#2a3441' } },
+                    axisLabel: { color: '#8892b0' },
+                    splitLine: { lineStyle: { color: '#1a1f2e' } }
+                },
+                series: [{
+                    type: 'scatter',
+                    symbolSize: function (data) {
+                        return Math.sqrt(data[2]) * 5;
+                    },
+                    data: [
+                        [8.2, 245, 150, 'AI governance frameworks'],
+                        [5.7, 180, 120, 'Prompt engineering certification'],
+                        [4.3, 156, 90, 'AI ROI calculator tools'],
+                        [12.5, 320, 200, 'AI compliance regulations EU'],
+                        [1.2, -186, 60, 'Basic chatbot tutorials'],
+                        [0.89, -145, 40, 'GPT-3 vs GPT-4 comparison'],
+                        [9.8, 280, 180, 'Emergency AI failsafe systems'],
+                        [7.2, 195, 140, 'Real-time AI monitoring tools'],
+                        [3.5, 45, 80, 'AI ethics guidelines'],
+                        [2.8, -65, 70, 'AI hype cycle 2023']
+                    ],
+                    label: {
+                        show: true,
+                        formatter: function (param) {
+                            return param.data[3];
+                        },
+                        position: 'top',
+                        color: '#fff',
+                        fontSize: 11
+                    },
+                    itemStyle: {
+                        color: function (params) {
+                            if (params.data[1] > 100) return '#00ff88';
+                            if (params.data[1] < -50) return '#ff4444';
+                            return '#ffb824';
+                        }
+                    }
+                }]
+            };
+            trendVelocityChart.setOption(trendVelocityOption);
+        }
+
+        // Helper functions
+        function generateRealtimeData(scale = 1) {
+            const data = [];
+            const now = new Date();
+            for (let i = 0; i < 100; i++) {
+                const time = new Date(now.getTime() - (100 - i) * 1000);
+                const value = Math.floor((Math.random() * 50 + 150) * scale);
+                data.push([time, value]);
+            }
+            return data;
+        }
+
+        function generatePlatformData(baseline) {
+            const data = [];
+            const now = new Date();
+            for (let i = 0; i < 20; i++) {
+                const time = new Date(now.getTime() - (20 - i) * 60000);
+                const value = baseline + Math.random() * 10 - 5;
+                data.push([time, Math.max(0, Math.min(100, value))]);
+            }
+            return data;
+        }
+
+        function initializeSparklines() {
+            // Simple sparkline visualization
+            const sparklines = document.querySelectorAll('.metric-sparkline');
+            sparklines.forEach((sparkline, index) => {
+                sparkline.style.background = `linear-gradient(to right, transparent 0%, rgba(0, 212, 255, 0.3) 50%, rgba(0, 212, 255, 0.1) 100%)`;
+            });
+        }
+
+        function startRealtimeMonitoring() {
+            // Update charts every second
+            liveDataInterval = setInterval(() => {
+                updateQueryStream();
+                updatePlatformPerformance();
+            }, 1000);
+
+            // Update metrics every 5 seconds
+            metricsInterval = setInterval(() => {
+                updateMetrics();
+                updateLiveFeed();
+            }, 5000);
+        }
+
+        function updateQueryStream() {
+            const option = queryStreamChart.getOption();
+            const now = new Date();
+            
+            // Add new data points
+            option.series[0].data.push([now, Math.floor(Math.random() * 50 + 150)]);
+            option.series[1].data.push([now, Math.floor(Math.random() * 15 + 45)]);
+            
+            // Remove old data points
+            if (option.series[0].data.length > 100) {
+                option.series[0].data.shift();
+                option.series[1].data.shift();
+            }
+            
+            queryStreamChart.setOption(option);
+        }
+
+        function updatePlatformPerformance() {
+            const option = platformPerformanceChart.getOption();
+            const now = new Date();
+            
+            option.series.forEach((series, index) => {
+                const baseline = [72, 89, 94, 45][index];
+                const newValue = baseline + Math.random() * 10 - 5;
+                series.data.push([now, Math.max(0, Math.min(100, newValue))]);
+                
+                if (series.data.length > 20) {
+                    series.data.shift();
+                }
+            });
+            
+            platformPerformanceChart.setOption(option);
+        }
+
+        function updateMetrics() {
+            // Update query volume
+            const queryVolume = document.getElementById('queryVolume');
+            const currentVolume = parseInt(queryVolume.textContent.replace(',', ''));
+            const change = Math.floor(Math.random() * 200 - 100);
+            queryVolume.textContent = (currentVolume + change).toLocaleString();
+
+            // Update other metrics with small variations
+            document.getElementById('responseTime').textContent = (0.8 + Math.random() * 0.4 - 0.2).toFixed(1) + 's';
+            document.getElementById('trendChanges').textContent = Math.floor(Math.random() * 10 + 42);
+        }
+
+        function updateLiveFeed() {
+            const feedItems = [
+                {
+                    icon: 'trend',
+                    title: 'New Trending Topic',
+                    desc: '"AI data privacy laws" showing 180% increase in queries',
+                    meta: ['🔥 Rising Fast', '📊 3.2K queries/hr']
+                },
+                {
+                    icon: 'alert',
+                    title: 'Content Performance Alert',
+                    desc: 'Your "Machine Learning Guide" dropped to position #5',
+                    meta: ['💔 18% CTR loss', '🎯 Action needed']
+                },
+                {
+                    icon: 'algorithm',
+                    title: 'Algorithm Pattern Detected',
+                    desc: 'Perplexity now favoring bullet-point summaries',
+                    meta: ['🔄 Format update', '📝 Adjust content structure']
+                },
+                {
+                    icon: 'trend',
+                    title: 'Competitor Activity',
+                    desc: 'TechCorp published 5 new AI governance articles',
+                    meta: ['⚠️ Market share risk', '🎯 Counter-strategy needed']
+                }
+            ];
+
+            const feed = document.getElementById('live-feed');
+            const randomItem = feedItems[Math.floor(Math.random() * feedItems.length)];
+            
+            const newItem = document.createElement('div');
+            newItem.className = 'feed-item';
+            newItem.innerHTML = `
+                <div class="feed-icon ${randomItem.icon}">${
+                    randomItem.icon === 'trend' ? '📈' : 
+                    randomItem.icon === 'alert' ? '⚠️' : '🤖'
+                }</div>
+                <div class="feed-content">
+                    <div class="feed-title">${randomItem.title}</div>
+                    <div class="feed-desc">${randomItem.desc}</div>
+                    <div class="feed-meta">
+                        ${randomItem.meta.map(m => `<span>${m}</span>`).join('')}
+                    </div>
+                </div>
+                <div class="feed-time">Just now</div>
+            `;
+            
+            feed.insertBefore(newItem, feed.firstChild);
+            
+            // Remove old items if too many
+            while (feed.children.length > 10) {
+                feed.removeChild(feed.lastChild);
+            }
+        }
+
+        // Action functions
+        function configureAlerts() {
+            console.log('Opening alert configuration...');
+            alert('Configure custom alerts for algorithm changes and trend shifts');
+        }
+
+        function exportReport() {
+            console.log('Exporting real-time monitoring report...');
+            alert('Generating Real-time AI Performance Report...');
+        }
+
+        function viewCritical() {
+            console.log('Viewing critical alerts...');
+            alert('3 Critical Alerts:\n1. ChatGPT algorithm update\n2. 23% visibility drop\n3. Competitor gaining market share');
+        }
+
+        function handleAlert() {
+            console.log('Handling algorithm update alert...');
+            alert('Opening Algorithm Adaptation Wizard...\n\nRecommended Actions:\n1. Update content structure\n2. Add recent statistics\n3. Implement new schema markup');
+        }
+
+        function filterStream(type) {
+            const buttons = document.querySelectorAll('.card-action-btn');
+            buttons.forEach(btn => btn.classList.remove('active'));
+            event.target.classList.add('active');
+            
+            console.log(`Filtering stream for: ${type}`);
+        }
+
+        function viewFullTimeline() {
+            console.log('Viewing full algorithm timeline...');
+            alert('Opening complete algorithm change history...');
+        }
+
+        function quickAction(action) {
+            console.log(`Executing quick action: ${action}`);
+            const actions = {
+                'optimize': 'Starting emergency optimization for 23 critical pages...',
+                'content': 'Opening content creation wizard for 12 trending topics...',
+                'schema': 'Updating schema markup to match new requirements...',
+                'monitor': 'Initiating deep competitive analysis scan...'
+            };
+            alert(actions[action]);
+        }
+
+        function preventDrop() {
+            console.log('Preventing traffic drop...');
+            alert('Implementing traffic protection measures...\n\n1. Updating 15 critical pages\n2. Adjusting content structure\n3. Enhancing technical SEO');
+        }
+
+        function captureOpportunity() {
+            console.log('Capturing trending opportunity...');
+            alert('Creating content for "AI Safety Protocols"...\n\nContent brief generated\nWriters notified\nPublishing slot reserved');
+        }
+
+        function defendPosition() {
+            console.log('Defending market position...');
+            alert('Activating position defense strategy...\n\n1. Enhancing existing content\n2. Building topical authority\n3. Increasing update frequency');
+        }
+
+        // Window resize handler
+        window.addEventListener('resize', () => {
+            queryStreamChart && queryStreamChart.resize();
+            platformPerformanceChart && platformPerformanceChart.resize();
+            trendVelocityChart && trendVelocityChart.resize();
+        });
+
+        // Cleanup on page unload
+        window.addEventListener('beforeunload', () => {
+            clearInterval(liveDataInterval);
+            clearInterval(metricsInterval);
+        });
+
+        // Simulate alert dismissal
+        setTimeout(() => {
+            const alertSection = document.getElementById('alertSection');
+            if (alertSection) {
+                alertSection.style.opacity = '0';
+                setTimeout(() => {
+                    alertSection.style.display = 'none';
+                }, 300);
+            }
+        }, 30000); // Hide after 30 seconds
+    </script>
+</body>
+</html>

@@ -1,0 +1,1236 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Eureka GEO Content - Knowledge Management & Optimization</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/echarts/5.4.3/echarts.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: #0a0f1c;
+            color: #e0e0e0;
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+
+        /* Header Styles */
+        .header {
+            background: linear-gradient(135deg, #1a237e 0%, #3949ab 100%);
+            padding: 20px 0;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.3);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+
+        .header-content {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-size: 24px;
+            font-weight: bold;
+            color: #fff;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .logo-icon {
+            width: 40px;
+            height: 40px;
+            background: #00e5ff;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            color: #1a237e;
+        }
+
+        .nav-menu {
+            display: flex;
+            gap: 30px;
+            list-style: none;
+        }
+
+        .nav-menu a {
+            color: #fff;
+            text-decoration: none;
+            font-weight: 500;
+            transition: opacity 0.3s;
+            position: relative;
+        }
+
+        .nav-menu a:hover {
+            opacity: 0.8;
+        }
+
+        .nav-menu a.active::after {
+            content: '';
+            position: absolute;
+            bottom: -5px;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: #00e5ff;
+        }
+
+        /* Main Container */
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        /* Content Header */
+        .content-header {
+            margin-bottom: 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .content-title {
+            font-size: 32px;
+            font-weight: 700;
+            background: linear-gradient(45deg, #00e5ff, #00acc1);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .content-actions {
+            display: flex;
+            gap: 15px;
+        }
+
+        .action-btn {
+            background: linear-gradient(135deg, #00e5ff 0%, #00acc1 100%);
+            border: none;
+            color: #1a237e;
+            padding: 10px 20px;
+            border-radius: 6px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+
+        .action-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(0, 229, 255, 0.3);
+        }
+
+        .action-btn.secondary {
+            background: #2a3f5f;
+            color: #fff;
+        }
+
+        /* Content Stats */
+        .content-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .stat-card {
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            border-radius: 12px;
+            padding: 20px;
+            text-align: center;
+            transition: transform 0.3s;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .stat-value {
+            font-size: 36px;
+            font-weight: bold;
+            color: #00e5ff;
+        }
+
+        .stat-label {
+            font-size: 14px;
+            color: #b3e5fc;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-top: 5px;
+        }
+
+        /* Content Grid Section */
+        .content-grid-section {
+            background: #1a2332;
+            border-radius: 12px;
+            padding: 25px;
+            margin-bottom: 30px;
+        }
+
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .section-title {
+            font-size: 20px;
+            font-weight: 600;
+            color: #fff;
+        }
+
+        .filter-controls {
+            display: flex;
+            gap: 10px;
+        }
+
+        .filter-select {
+            background: #0a0f1c;
+            border: 1px solid #2a3f5f;
+            color: #fff;
+            padding: 8px 12px;
+            border-radius: 6px;
+            font-size: 14px;
+        }
+
+        .search-box {
+            background: #0a0f1c;
+            border: 1px solid #2a3f5f;
+            color: #fff;
+            padding: 8px 15px;
+            border-radius: 6px;
+            font-size: 14px;
+            width: 250px;
+        }
+
+        /* Content Cards Grid */
+        .content-cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 20px;
+        }
+
+        .content-card {
+            background: #0a0f1c;
+            border-radius: 8px;
+            padding: 20px;
+            border: 1px solid #2a3f5f;
+            transition: border-color 0.3s, transform 0.3s;
+            cursor: pointer;
+        }
+
+        .content-card:hover {
+            border-color: #00e5ff;
+            transform: translateY(-3px);
+        }
+
+        .content-card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: start;
+            margin-bottom: 15px;
+        }
+
+        .content-type-badge {
+            display: inline-block;
+            padding: 4px 10px;
+            border-radius: 15px;
+            font-size: 12px;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+
+        .badge-faq {
+            background: #4caf50;
+            color: white;
+        }
+
+        .badge-manual {
+            background: #2196f3;
+            color: white;
+        }
+
+        .badge-review {
+            background: #ff9800;
+            color: white;
+        }
+
+        .badge-howto {
+            background: #9c27b0;
+            color: white;
+        }
+
+        .content-card-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: #fff;
+            margin-bottom: 10px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        .content-card-meta {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            font-size: 13px;
+            color: #8892b0;
+        }
+
+        .meta-item {
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .performance-bar {
+            width: 100%;
+            height: 6px;
+            background: #2a3f5f;
+            border-radius: 3px;
+            margin-top: 10px;
+            overflow: hidden;
+        }
+
+        .performance-fill {
+            height: 100%;
+            background: #00e5ff;
+            transition: width 0.3s;
+        }
+
+        /* Knowledge Atoms Section */
+        .atoms-section {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .atoms-card {
+            background: #1a2332;
+            border-radius: 12px;
+            padding: 20px;
+        }
+
+        .atoms-list {
+            margin-top: 15px;
+            max-height: 300px;
+            overflow-y: auto;
+        }
+
+        .atom-item {
+            background: #0a0f1c;
+            border-radius: 6px;
+            padding: 12px;
+            margin-bottom: 10px;
+            border-left: 3px solid #00e5ff;
+        }
+
+        .atom-type {
+            font-size: 12px;
+            color: #00e5ff;
+            text-transform: uppercase;
+            margin-bottom: 5px;
+        }
+
+        .atom-content {
+            font-size: 14px;
+            color: #e0e0e0;
+            line-height: 1.5;
+        }
+
+        /* Schema Markup Status */
+        .schema-section {
+            background: #1a2332;
+            border-radius: 12px;
+            padding: 25px;
+            margin-bottom: 30px;
+        }
+
+        .schema-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
+
+        .schema-item {
+            text-align: center;
+            padding: 20px;
+            background: #0a0f1c;
+            border-radius: 8px;
+            transition: transform 0.3s;
+        }
+
+        .schema-item:hover {
+            transform: scale(1.05);
+        }
+
+        .schema-icon {
+            font-size: 48px;
+            margin-bottom: 10px;
+        }
+
+        .schema-name {
+            font-size: 16px;
+            font-weight: 600;
+            color: #fff;
+            margin-bottom: 5px;
+        }
+
+        .schema-count {
+            font-size: 24px;
+            color: #00e5ff;
+            font-weight: bold;
+        }
+
+        /* Content Performance Chart */
+        .performance-section {
+            background: #1a2332;
+            border-radius: 12px;
+            padding: 25px;
+            margin-bottom: 30px;
+        }
+
+        .chart-container {
+            height: 350px;
+            margin-top: 20px;
+        }
+
+        /* Content Editor Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 2000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.8);
+        }
+
+        .modal-content {
+            background-color: #1a2332;
+            margin: 50px auto;
+            padding: 30px;
+            border-radius: 12px;
+            width: 80%;
+            max-width: 800px;
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .modal-title {
+            font-size: 24px;
+            font-weight: 600;
+            color: #fff;
+        }
+
+        .close-btn {
+            background: none;
+            border: none;
+            color: #8892b0;
+            font-size: 28px;
+            cursor: pointer;
+            transition: color 0.3s;
+        }
+
+        .close-btn:hover {
+            color: #fff;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-label {
+            display: block;
+            font-size: 14px;
+            color: #b3e5fc;
+            margin-bottom: 8px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .form-input, .form-textarea {
+            width: 100%;
+            background: #0a0f1c;
+            border: 1px solid #2a3f5f;
+            color: #fff;
+            padding: 10px 15px;
+            border-radius: 6px;
+            font-size: 14px;
+            transition: border-color 0.3s;
+        }
+
+        .form-input:focus, .form-textarea:focus {
+            outline: none;
+            border-color: #00e5ff;
+        }
+
+        .form-textarea {
+            min-height: 150px;
+            resize: vertical;
+        }
+
+        /* Optimization Suggestions */
+        .suggestions-section {
+            background: #1a2332;
+            border-radius: 12px;
+            padding: 25px;
+            margin-bottom: 30px;
+        }
+
+        .suggestion-item {
+            background: #0a0f1c;
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .suggestion-icon {
+            width: 40px;
+            height: 40px;
+            background: rgba(0, 229, 255, 0.2);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+        }
+
+        .suggestion-content {
+            flex: 1;
+        }
+
+        .suggestion-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: #fff;
+            margin-bottom: 5px;
+        }
+
+        .suggestion-desc {
+            font-size: 14px;
+            color: #8892b0;
+        }
+
+        .suggestion-action {
+            background: #00e5ff;
+            color: #1a237e;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 6px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.3s;
+        }
+
+        .suggestion-action:hover {
+            transform: scale(1.05);
+        }
+
+        /* Loading State */
+        .loading {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid #00e5ff;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .content-header {
+                flex-direction: column;
+                gap: 20px;
+            }
+
+            .content-cards {
+                grid-template-columns: 1fr;
+            }
+
+            .atoms-section {
+                grid-template-columns: 1fr;
+            }
+
+            .nav-menu {
+                display: none;
+            }
+
+            .modal-content {
+                width: 95%;
+                margin: 20px auto;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="header-content">
+            <a href="index.html" class="logo">
+                <div class="logo-icon">E</div>
+                Eureka GEO Content
+            </a>
+            <nav>
+                <ul class="nav-menu">
+                    <li><a href="index.html">Overview</a></li>
+                    <li><a href="analysis.html">Analysis</a></li>
+                    <li><a href="#" class="active">Content</a></li>
+                    <li><a href="#monitoring">Monitoring</a></li>
+                    <li><a href="#settings">Settings</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="container">
+        <!-- Content Header -->
+        <div class="content-header">
+            <h1 class="content-title">Content Management & Optimization</h1>
+            <div class="content-actions">
+                <button class="action-btn secondary" onclick="refreshContent()">↻ Refresh</button>
+                <button class="action-btn" onclick="openNewContentModal()">+ New Content</button>
+            </div>
+        </div>
+
+        <!-- Content Statistics -->
+        <div class="content-stats">
+            <div class="stat-card">
+                <div class="stat-value">847</div>
+                <div class="stat-label">Total Knowledge Atoms</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value">324</div>
+                <div class="stat-label">Active Content Pieces</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value">92%</div>
+                <div class="stat-label">Schema Coverage</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value">4.2s</div>
+                <div class="stat-label">Avg Update Time</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value">78%</div>
+                <div class="stat-label">AI Citation Rate</div>
+            </div>
+        </div>
+
+        <!-- Content Library -->
+        <div class="content-grid-section">
+            <div class="section-header">
+                <h2 class="section-title">Content Library</h2>
+                <div class="filter-controls">
+                    <input type="text" class="search-box" placeholder="Search content..." id="content-search">
+                    <select class="filter-select" id="type-filter">
+                        <option value="all">All Types</option>
+                        <option value="faq">FAQ</option>
+                        <option value="manual">Manual</option>
+                        <option value="review">Review</option>
+                        <option value="howto">How-to</option>
+                    </select>
+                    <select class="filter-select" id="product-filter">
+                        <option value="all">All Products</option>
+                        <option value="fc9">FC9 Series</option>
+                        <option value="beetle">Beetle Robot</option>
+                        <option value="ubox">Ubox</option>
+                    </select>
+                </div>
+            </div>
+            <div class="content-cards" id="content-cards">
+                <!-- Content Card 1 -->
+                <div class="content-card" onclick="editContent('FAQ-001')">
+                    <div class="content-card-header">
+                        <span class="content-type-badge badge-faq">FAQ</span>
+                        <span style="color: #4caf50;">✓ Active</span>
+                    </div>
+                    <h3 class="content-card-title">How does electrolyzed water technology work?</h3>
+                    <div class="content-card-meta">
+                        <div class="meta-item">
+                            <span>Product:</span>
+                            <span>FC9 Pro</span>
+                        </div>
+                        <div class="meta-item">
+                            <span>Citations:</span>
+                            <span style="color: #00e5ff;">324</span>
+                        </div>
+                        <div class="meta-item">
+                            <span>BMR Impact:</span>
+                            <span style="color: #4caf50;">+2.4%</span>
+                        </div>
+                        <div class="meta-item">
+                            <span>Last Updated:</span>
+                            <span>2 hours ago</span>
+                        </div>
+                    </div>
+                    <div class="performance-bar">
+                        <div class="performance-fill" style="width: 85%;"></div>
+                    </div>
+                </div>
+
+                <!-- Content Card 2 -->
+                <div class="content-card" onclick="editContent('MAN-042')">
+                    <div class="content-card-header">
+                        <span class="content-type-badge badge-manual">Manual</span>
+                        <span style="color: #4caf50;">✓ Active</span>
+                    </div>
+                    <h3 class="content-card-title">Beetle Robot Setup Guide</h3>
+                    <div class="content-card-meta">
+                        <div class="meta-item">
+                            <span>Product:</span>
+                            <span>Beetle Robot</span>
+                        </div>
+                        <div class="meta-item">
+                            <span>Citations:</span>
+                            <span style="color: #00e5ff;">189</span>
+                        </div>
+                        <div class="meta-item">
+                            <span>BMR Impact:</span>
+                            <span style="color: #4caf50;">+1.8%</span>
+                        </div>
+                        <div class="meta-item">
+                            <span>Last Updated:</span>
+                            <span>1 day ago</span>
+                        </div>
+                    </div>
+                    <div class="performance-bar">
+                        <div class="performance-fill" style="width: 72%;"></div>
+                    </div>
+                </div>
+
+                <!-- Content Card 3 -->
+                <div class="content-card" onclick="editContent('REV-015')">
+                    <div class="content-card-header">
+                        <span class="content-type-badge badge-review">Review</span>
+                        <span style="color: #4caf50;">✓ Active</span>
+                    </div>
+                    <h3 class="content-card-title">FC9 Pro vs Competitor Analysis</h3>
+                    <div class="content-card-meta">
+                        <div class="meta-item">
+                            <span>Product:</span>
+                            <span>FC9 Series</span>
+                        </div>
+                        <div class="meta-item">
+                            <span>Citations:</span>
+                            <span style="color: #00e5ff;">456</span>
+                        </div>
+                        <div class="meta-item">
+                            <span>BMR Impact:</span>
+                            <span style="color: #4caf50;">+3.2%</span>
+                        </div>
+                        <div class="meta-item">
+                            <span>Last Updated:</span>
+                            <span>3 hours ago</span>
+                        </div>
+                    </div>
+                    <div class="performance-bar">
+                        <div class="performance-fill" style="width: 93%;"></div>
+                    </div>
+                </div>
+
+                <!-- Content Card 4 -->
+                <div class="content-card" onclick="editContent('HOW-007')">
+                    <div class="content-card-header">
+                        <span class="content-type-badge badge-howto">How-To</span>
+                        <span style="color: #ff9800;">⚡ Needs Update</span>
+                    </div>
+                    <h3 class="content-card-title">Pet Hair Removal Guide</h3>
+                    <div class="content-card-meta">
+                        <div class="meta-item">
+                            <span>Product:</span>
+                            <span>All Products</span>
+                        </div>
+                        <div class="meta-item">
+                            <span>Citations:</span>
+                            <span style="color: #00e5ff;">87</span>
+                        </div>
+                        <div class="meta-item">
+                            <span>BMR Impact:</span>
+                            <span style="color: #ff9800;">+0.5%</span>
+                        </div>
+                        <div class="meta-item">
+                            <span>Last Updated:</span>
+                            <span>5 days ago</span>
+                        </div>
+                    </div>
+                    <div class="performance-bar">
+                        <div class="performance-fill" style="width: 45%;"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Knowledge Atoms Section -->
+        <div class="atoms-section">
+            <div class="atoms-card">
+                <h3 class="section-title">Recent Knowledge Atoms</h3>
+                <div class="atoms-list">
+                    <div class="atom-item">
+                        <div class="atom-type">Define</div>
+                        <div class="atom-content">
+                            Eureka's real-time electrolyzed water technology converts ordinary tap water into a powerful cleaning solution that eliminates 99.9% of bacteria without any chemical additives.
+                        </div>
+                    </div>
+                    <div class="atom-item">
+                        <div class="atom-type">Advantage</div>
+                        <div class="atom-content">
+                            Unlike UV sanitization that requires time and direct exposure, Eureka's electrolyzed water works instantly during the cleaning process, ensuring continuous sanitization.
+                        </div>
+                    </div>
+                    <div class="atom-item">
+                        <div class="atom-type">How-To</div>
+                        <div class="atom-content">
+                            To activate the electrolyzed water system on FC9 Pro: 1) Fill the clean water tank, 2) Press the 'Pure Clean' button, 3) Green indicator confirms activation.
+                        </div>
+                    </div>
+                    <div class="atom-item">
+                        <div class="atom-type">Compare</div>
+                        <div class="atom-content">
+                            Eureka FC9 Pro uses 0 chemicals for 99.9% sanitization, while traditional cleaners require chemical solutions that may leave residue harmful to pets and children.
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="atoms-card">
+                <h3 class="section-title">Knowledge Atom Distribution</h3>
+                <div id="atom-distribution-chart" class="chart-container"></div>
+            </div>
+        </div>
+
+        <!-- Schema Markup Status -->
+        <div class="schema-section">
+            <h3 class="section-title">Schema Markup Coverage</h3>
+            <div class="schema-grid">
+                <div class="schema-item">
+                    <div class="schema-icon">📄</div>
+                    <div class="schema-name">FAQPage</div>
+                    <div class="schema-count">142</div>
+                </div>
+                <div class="schema-item">
+                    <div class="schema-icon">📦</div>
+                    <div class="schema-name">Product</div>
+                    <div class="schema-count">89</div>
+                </div>
+                <div class="schema-item">
+                    <div class="schema-icon">📝</div>
+                    <div class="schema-name">HowTo</div>
+                    <div class="schema-count">67</div>
+                </div>
+                <div class="schema-item">
+                    <div class="schema-icon">⭐</div>
+                    <div class="schema-name">Review</div>
+                    <div class="schema-count">54</div>
+                </div>
+                <div class="schema-item">
+                    <div class="schema-icon">🏢</div>
+                    <div class="schema-name">Organization</div>
+                    <div class="schema-count">1</div>
+                </div>
+                <div class="schema-item">
+                    <div class="schema-icon">📊</div>
+                    <div class="schema-name">Dataset</div>
+                    <div class="schema-count">23</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Content Performance Analysis -->
+        <div class="performance-section">
+            <h3 class="section-title">Content Performance by Type</h3>
+            <div id="performance-chart" class="chart-container"></div>
+        </div>
+
+        <!-- Optimization Suggestions -->
+        <div class="suggestions-section">
+            <h3 class="section-title">AI-Driven Optimization Suggestions</h3>
+            
+            <div class="suggestion-item">
+                <div class="suggestion-icon">🎯</div>
+                <div class="suggestion-content">
+                    <div class="suggestion-title">Add Silver Ion Technology to Pet Content</div>
+                    <div class="suggestion-desc">24% of pet-related queries don't mention silver ion antibacterial technology. Update 12 content pieces to improve coverage.</div>
+                </div>
+                <button class="suggestion-action" onclick="applyOptimization('silver-ion')">Apply</button>
+            </div>
+
+            <div class="suggestion-item">
+                <div class="suggestion-icon">📈</div>
+                <div class="suggestion-content">
+                    <div class="suggestion-title">Create Comparison Tables</div>
+                    <div class="suggestion-desc">Competitor comparison queries show 42% lower BMR. Add structured comparison tables to 8 review articles.</div>
+                </div>
+                <button class="suggestion-action" onclick="applyOptimization('comparison')">Apply</button>
+            </div>
+
+            <div class="suggestion-item">
+                <div class="suggestion-icon">⚡</div>
+                <div class="suggestion-content">
+                    <div class="suggestion-title">Integrate Patent References</div>
+                    <div class="suggestion-desc">82 patents mentioned in only 31% of technical content. Add patent citations to boost authority scores.</div>
+                </div>
+                <button class="suggestion-action" onclick="applyOptimization('patents')">Apply</button>
+            </div>
+
+            <div class="suggestion-item">
+                <div class="suggestion-icon">🔄</div>
+                <div class="suggestion-content">
+                    <div class="suggestion-title">Update Outdated FAQs</div>
+                    <div class="suggestion-desc">15 FAQ entries haven't been updated in 30+ days. Refresh with latest product features and specifications.</div>
+                </div>
+                <button class="suggestion-action" onclick="applyOptimization('faq-update')">Apply</button>
+            </div>
+        </div>
+    </main>
+
+    <!-- Content Editor Modal -->
+    <div id="contentModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title">Edit Content</h2>
+                <button class="close-btn" onclick="closeModal()">&times;</button>
+            </div>
+            <form id="content-form">
+                <div class="form-group">
+                    <label class="form-label">Content ID</label>
+                    <input type="text" class="form-input" id="content-id" readonly>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Title</label>
+                    <input type="text" class="form-input" id="content-title" placeholder="Enter content title">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Content Type</label>
+                    <select class="form-input" id="content-type">
+                        <option value="faq">FAQ</option>
+                        <option value="manual">Manual</option>
+                        <option value="review">Review</option>
+                        <option value="howto">How-To</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Product Line</label>
+                    <select class="form-input" id="content-product">
+                        <option value="fc9">FC9 Series</option>
+                        <option value="beetle">Beetle Robot</option>
+                        <option value="ubox">Ubox</option>
+                        <option value="all">All Products</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Content</label>
+                    <textarea class="form-textarea" id="content-body" placeholder="Enter content here..."></textarea>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Schema Markup</label>
+                    <select class="form-input" id="content-schema">
+                        <option value="FAQPage">FAQPage</option>
+                        <option value="Product">Product</option>
+                        <option value="HowTo">HowTo</option>
+                        <option value="Review">Review</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Tech Features (comma-separated)</label>
+                    <input type="text" class="form-input" id="tech-features" placeholder="e.g., electrolyzed water, 99.9% sanitization">
+                </div>
+                <div class="content-actions" style="margin-top: 30px;">
+                    <button type="button" class="action-btn secondary" onclick="closeModal()">Cancel</button>
+                    <button type="submit" class="action-btn">Save Changes</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        // Initialize charts
+        let atomDistributionChart, performanceChart;
+
+        function initCharts() {
+            // Knowledge Atom Distribution Chart
+            atomDistributionChart = echarts.init(document.getElementById('atom-distribution-chart'));
+            const atomDistributionOption = {
+                tooltip: {
+                    trigger: 'item',
+                    backgroundColor: 'rgba(0, 0, 0, 0.8)',
+                    textStyle: { color: '#fff' }
+                },
+                legend: {
+                    orient: 'vertical',
+                    left: 'left',
+                    textStyle: { color: '#8892b0' }
+                },
+                series: [{
+                    name: 'Atom Types',
+                    type: 'pie',
+                    radius: ['50%', '80%'],
+                    avoidLabelOverlap: false,
+                    itemStyle: {
+                        borderRadius: 10,
+                        borderColor: '#1a2332',
+                        borderWidth: 2
+                    },
+                    label: {
+                        show: false,
+                        position: 'center'
+                    },
+                    emphasis: {
+                        label: {
+                            show: true,
+                            fontSize: '20',
+                            fontWeight: 'bold',
+                            color: '#fff'
+                        }
+                    },
+                    labelLine: {
+                        show: false
+                    },
+                    data: [
+                        { value: 245, name: 'Define', itemStyle: { color: '#00e5ff' } },
+                        { value: 198, name: 'Advantage', itemStyle: { color: '#4caf50' } },
+                        { value: 167, name: 'How-To', itemStyle: { color: '#ff9800' } },
+                        { value: 142, name: 'Compare', itemStyle: { color: '#e91e63' } },
+                        { value: 95, name: 'Other', itemStyle: { color: '#9c27b0' } }
+                    ]
+                }]
+            };
+            atomDistributionChart.setOption(atomDistributionOption);
+
+            // Content Performance Chart
+            performanceChart = echarts.init(document.getElementById('performance-chart'));
+            const performanceOption = {
+                tooltip: {
+                    trigger: 'axis',
+                    axisPointer: { type: 'shadow' },
+                    backgroundColor: 'rgba(0, 0, 0, 0.8)',
+                    textStyle: { color: '#fff' }
+                },
+                legend: {
+                    data: ['Citations', 'BMR Impact', 'Update Frequency'],
+                    textStyle: { color: '#8892b0' }
+                },
+                grid: {
+                    left: '3%',
+                    right: '4%',
+                    bottom: '3%',
+                    containLabel: true
+                },
+                xAxis: {
+                    type: 'category',
+                    data: ['FAQ', 'Manual', 'Review', 'How-To', 'Technical'],
+                    axisLine: { lineStyle: { color: '#3a4f6f' } },
+                    axisLabel: { color: '#8892b0' }
+                },
+                yAxis: [
+                    {
+                        type: 'value',
+                        name: 'Citations',
+                        axisLine: { lineStyle: { color: '#00e5ff' } },
+                        axisLabel: { color: '#8892b0' },
+                        splitLine: { lineStyle: { color: '#2a3f5f' } }
+                    },
+                    {
+                        type: 'value',
+                        name: 'BMR Impact (%)',
+                        axisLine: { lineStyle: { color: '#4caf50' } },
+                        axisLabel: { color: '#8892b0', formatter: '{value}%' }
+                    }
+                ],
+                series: [
+                    {
+                        name: 'Citations',
+                        type: 'bar',
+                        data: [324, 189, 456, 167, 298],
+                        itemStyle: {
+                            color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
+                                { offset: 0, color: '#00e5ff' },
+                                { offset: 1, color: '#00acc1' }
+                            ])
+                        }
+                    },
+                    {
+                        name: 'BMR Impact',
+                        type: 'line',
+                        yAxisIndex: 1,
+                        data: [2.4, 1.8, 3.2, 1.2, 2.8],
+                        smooth: true,
+                        itemStyle: { color: '#4caf50' },
+                        symbol: 'circle',
+                        symbolSize: 8
+                    },
+                    {
+                        name: 'Update Frequency',
+                        type: 'bar',
+                        data: [85, 72, 93, 45, 78],
+                        itemStyle: { color: '#ff9800' }
+                    }
+                ]
+            };
+            performanceChart.setOption(performanceOption);
+        }
+
+        // Content management functions
+        function refreshContent() {
+            const contentCards = document.getElementById('content-cards');
+            contentCards.innerHTML = '<div class="loading"></div>';
+            
+            setTimeout(() => {
+                location.reload();
+            }, 1000);
+        }
+
+        function openNewContentModal() {
+            document.getElementById('contentModal').style.display = 'block';
+            document.getElementById('content-id').value = 'NEW-' + Date.now();
+            document.getElementById('content-title').value = '';
+            document.getElementById('content-body').value = '';
+            document.getElementById('tech-features').value = '';
+        }
+
+        function editContent(contentId) {
+            document.getElementById('contentModal').style.display = 'block';
+            
+            // Simulate loading content data
+            document.getElementById('content-id').value = contentId;
+            
+            // Pre-fill form based on content ID
+            if (contentId === 'FAQ-001') {
+                document.getElementById('content-title').value = 'How does electrolyzed water technology work?';
+                document.getElementById('content-type').value = 'faq';
+                document.getElementById('content-product').value = 'fc9';
+                document.getElementById('content-body').value = 'Eureka\'s patented real-time electrolyzed water technology instantly converts tap water into a powerful cleaning solution...';
+                document.getElementById('tech-features').value = 'electrolyzed water, 99.9% sanitization, chemical-free';
+            }
+        }
+
+        function closeModal() {
+            document.getElementById('contentModal').style.display = 'none';
+        }
+
+        // Apply optimization suggestions
+        function applyOptimization(type) {
+            const button = event.target;
+            button.innerHTML = '<span class="loading"></span>';
+            button.disabled = true;
+            
+            setTimeout(() => {
+                button.innerHTML = '✓ Applied';
+                button.style.background = '#4caf50';
+                
+                // Update relevant metrics
+                if (type === 'silver-ion') {
+                    updateMetric('pet-coverage', 76);
+                } else if (type === 'comparison') {
+                    updateMetric('bmr-comparison', 58);
+                }
+            }, 2000);
+        }
+
+        function updateMetric(metric, value) {
+            // Simulate metric update
+            console.log(`Updated ${metric} to ${value}%`);
+        }
+
+        // Search and filter functionality
+        document.getElementById('content-search').addEventListener('input', function(e) {
+            const searchTerm = e.target.value.toLowerCase();
+            const cards = document.querySelectorAll('.content-card');
+            
+            cards.forEach(card => {
+                const title = card.querySelector('.content-card-title').textContent.toLowerCase();
+                if (title.includes(searchTerm)) {
+                    card.style.display = 'block';
+                } else {
+                    card.style.display = 'none';
+                }
+            });
+        });
+
+        document.getElementById('type-filter').addEventListener('change', function(e) {
+            const filterValue = e.target.value;
+            const cards = document.querySelectorAll('.content-card');
+            
+            cards.forEach(card => {
+                const badge = card.querySelector('.content-type-badge');
+                if (filterValue === 'all' || badge.textContent.toLowerCase() === filterValue) {
+                    card.style.display = 'block';
+                } else {
+                    card.style.display = 'none';
+                }
+            });
+        });
+
+        // Form submission
+        document.getElementById('content-form').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            // Simulate saving
+            const saveButton = e.target.querySelector('button[type="submit"]');
+            saveButton.innerHTML = '<span class="loading"></span> Saving...';
+            saveButton.disabled = true;
+            
+            setTimeout(() => {
+                saveButton.innerHTML = '✓ Saved';
+                setTimeout(() => {
+                    closeModal();
+                    refreshContent();
+                }, 1000);
+            }, 2000);
+        });
+
+        // Window close modal on outside click
+        window.onclick = function(event) {
+            const modal = document.getElementById('contentModal');
+            if (event.target == modal) {
+                closeModal();
+            }
+        }
+
+        // Window resize handler
+        window.addEventListener('resize', () => {
+            atomDistributionChart && atomDistributionChart.resize();
+            performanceChart && performanceChart.resize();
+        });
+
+        // Initialize on page load
+        document.addEventListener('DOMContentLoaded', () => {
+            initCharts();
+        });
+    </script>
+</body>
+</html>

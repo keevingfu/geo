@@ -1,0 +1,1397 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GEO Competitive Intelligence - AI Search Performance Analytics</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/echarts/5.4.3/echarts.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: #0a0f1c;
+            color: #e0e0e0;
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+
+        /* Header Styles */
+        .header {
+            background: linear-gradient(135deg, #1a237e 0%, #3949ab 100%);
+            padding: 20px 0;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.3);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+
+        .header-content {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-size: 24px;
+            font-weight: bold;
+            color: #fff;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .logo-icon {
+            width: 40px;
+            height: 40px;
+            background: #00e5ff;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            color: #1a237e;
+        }
+
+        .nav-actions {
+            display: flex;
+            gap: 15px;
+        }
+
+        .action-btn {
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            color: #fff;
+            padding: 8px 16px;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-size: 14px;
+        }
+
+        .action-btn:hover {
+            background: rgba(255, 255, 255, 0.2);
+            transform: translateY(-2px);
+        }
+
+        .action-btn.primary {
+            background: #00e5ff;
+            color: #1a237e;
+            border: none;
+            font-weight: 600;
+        }
+
+        /* Main Container */
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        /* Page Header */
+        .page-header {
+            margin-bottom: 30px;
+        }
+
+        .page-title {
+            font-size: 32px;
+            font-weight: 700;
+            margin-bottom: 10px;
+            background: linear-gradient(45deg, #00e5ff, #00acc1);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .page-subtitle {
+            color: #8892b0;
+            font-size: 16px;
+        }
+
+        /* Competitor Selector */
+        .competitor-selector {
+            background: #1a2332;
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 30px;
+            display: flex;
+            gap: 20px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .selector-group {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .selector-label {
+            font-size: 12px;
+            color: #8892b0;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .selector-dropdown {
+            background: #0a0f1c;
+            border: 1px solid #2a3f5f;
+            color: #fff;
+            padding: 10px 15px;
+            border-radius: 6px;
+            font-size: 14px;
+            min-width: 200px;
+            cursor: pointer;
+        }
+
+        .compare-btn {
+            background: linear-gradient(135deg, #00e5ff 0%, #00acc1 100%);
+            border: none;
+            color: #1a237e;
+            padding: 10px 24px;
+            border-radius: 6px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            margin-left: auto;
+        }
+
+        .compare-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(0, 229, 255, 0.3);
+        }
+
+        /* Metrics Overview */
+        .metrics-overview {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .metric-card {
+            background: #1a2332;
+            border-radius: 12px;
+            padding: 25px;
+            position: relative;
+            overflow: hidden;
+            transition: transform 0.3s;
+        }
+
+        .metric-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .metric-card.primary {
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+        }
+
+        .metric-card.warning {
+            background: linear-gradient(135deg, #f57c00 0%, #ff9800 100%);
+        }
+
+        .metric-card.danger {
+            background: linear-gradient(135deg, #c62828 0%, #f44336 100%);
+        }
+
+        .metric-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .metric-title {
+            font-size: 14px;
+            color: #b3e5fc;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .metric-trend {
+            font-size: 12px;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .trend-up {
+            color: #4caf50;
+        }
+
+        .trend-down {
+            color: #f44336;
+        }
+
+        .metric-value {
+            font-size: 36px;
+            font-weight: bold;
+            color: #fff;
+            margin-bottom: 10px;
+        }
+
+        .metric-comparison {
+            font-size: 14px;
+            color: #8892b0;
+        }
+
+        /* Competition Analysis Section */
+        .analysis-section {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .analysis-card {
+            background: #1a2332;
+            border-radius: 12px;
+            padding: 25px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+        }
+
+        .analysis-card.full-width {
+            grid-column: 1 / -1;
+        }
+
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .card-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: #fff;
+        }
+
+        .card-actions {
+            display: flex;
+            gap: 10px;
+        }
+
+        .card-action-btn {
+            background: #2a3f5f;
+            border: none;
+            color: #fff;
+            padding: 6px 12px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 12px;
+            transition: background 0.3s;
+        }
+
+        .card-action-btn:hover {
+            background: #3a4f6f;
+        }
+
+        .card-action-btn.active {
+            background: #00e5ff;
+            color: #1a237e;
+        }
+
+        /* Chart Containers */
+        .chart-container {
+            height: 300px;
+        }
+
+        .large-chart-container {
+            height: 400px;
+        }
+
+        /* Gap Analysis Table */
+        .gap-analysis-table {
+            width: 100%;
+            background: #0a0f1c;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        .gap-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .gap-table th {
+            background: #2a3f5f;
+            padding: 12px;
+            text-align: left;
+            font-weight: 600;
+            color: #b3e5fc;
+            font-size: 13px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .gap-table td {
+            padding: 12px;
+            border-bottom: 1px solid #2a3f5f;
+            font-size: 14px;
+        }
+
+        .gap-table tr:hover {
+            background: #1a2332;
+        }
+
+        .gap-severity {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .gap-severity.critical {
+            background: #f44336;
+            color: white;
+        }
+
+        .gap-severity.high {
+            background: #ff9800;
+            color: white;
+        }
+
+        .gap-severity.medium {
+            background: #ffc107;
+            color: #1a237e;
+        }
+
+        .gap-severity.low {
+            background: #4caf50;
+            color: white;
+        }
+
+        /* AI Platform Performance */
+        .platform-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
+
+        .platform-card {
+            background: #0a0f1c;
+            border-radius: 8px;
+            padding: 20px;
+            border: 1px solid #2a3f5f;
+            transition: all 0.3s;
+        }
+
+        .platform-card:hover {
+            border-color: #00e5ff;
+            transform: translateY(-3px);
+        }
+
+        .platform-header {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+
+        .platform-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 18px;
+        }
+
+        .platform-icon.chatgpt {
+            background: #00a67e;
+            color: white;
+        }
+
+        .platform-icon.google {
+            background: #4285f4;
+            color: white;
+        }
+
+        .platform-icon.perplexity {
+            background: #20b2aa;
+            color: white;
+        }
+
+        .platform-icon.claude {
+            background: #9b59b6;
+            color: white;
+        }
+
+        .platform-metrics {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .platform-metric {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 13px;
+        }
+
+        .platform-metric-label {
+            color: #8892b0;
+        }
+
+        .platform-metric-value {
+            font-weight: 600;
+            color: #fff;
+        }
+
+        /* Insights Panel */
+        .insights-panel {
+            background: #1a2332;
+            border-radius: 12px;
+            padding: 25px;
+            margin-bottom: 30px;
+        }
+
+        .insights-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
+
+        .insight-card {
+            background: #0a0f1c;
+            border-radius: 8px;
+            padding: 20px;
+            border-left: 4px solid #00e5ff;
+            transition: transform 0.3s;
+        }
+
+        .insight-card:hover {
+            transform: translateX(5px);
+        }
+
+        .insight-icon {
+            width: 40px;
+            height: 40px;
+            background: rgba(0, 229, 255, 0.2);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 15px;
+            font-size: 20px;
+        }
+
+        .insight-title {
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 10px;
+            color: #fff;
+        }
+
+        .insight-description {
+            font-size: 14px;
+            color: #8892b0;
+            line-height: 1.6;
+            margin-bottom: 15px;
+        }
+
+        .insight-action {
+            color: #00e5ff;
+            font-size: 14px;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            transition: gap 0.3s;
+        }
+
+        .insight-action:hover {
+            gap: 10px;
+        }
+
+        /* Alert Banner */
+        .alert-banner {
+            background: linear-gradient(135deg, #f44336 0%, #e91e63 100%);
+            color: white;
+            padding: 15px 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .alert-icon {
+            font-size: 24px;
+        }
+
+        .alert-content {
+            flex: 1;
+        }
+
+        .alert-title {
+            font-weight: 600;
+            margin-bottom: 5px;
+        }
+
+        .alert-message {
+            font-size: 14px;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 1024px) {
+            .analysis-section {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .competitor-selector {
+                flex-direction: column;
+            }
+
+            .compare-btn {
+                margin-left: 0;
+                width: 100%;
+            }
+
+            .metrics-overview {
+                grid-template-columns: 1fr;
+            }
+
+            .insights-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* Loading State */
+        .loading {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid #00e5ff;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="header-content">
+            <div class="logo">
+                <div class="logo-icon">CI</div>
+                <span>GEO Competitive Intelligence</span>
+            </div>
+            <div class="nav-actions">
+                <button class="action-btn" onclick="exportReport()">Export Report</button>
+                <button class="action-btn" onclick="scheduleAlert()">Schedule Alerts</button>
+                <button class="action-btn primary" onclick="runAnalysis()">Run Analysis</button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="container">
+        <!-- Page Header -->
+        <div class="page-header">
+            <h1 class="page-title">Competitive Intelligence Dashboard</h1>
+            <p class="page-subtitle">Monitor and analyze competitor performance across AI search platforms</p>
+        </div>
+
+        <!-- Alert Banner (if needed) -->
+        <div class="alert-banner" id="alertBanner" style="display: none;">
+            <div class="alert-icon">⚠️</div>
+            <div class="alert-content">
+                <div class="alert-title">Critical Gap Detected</div>
+                <div class="alert-message">Competitor A has surpassed your brand mention rate by 15% in the last 7 days</div>
+            </div>
+            <button class="action-btn" onclick="viewDetails()">View Details</button>
+        </div>
+
+        <!-- Competitor Selector -->
+        <div class="competitor-selector">
+            <div class="selector-group">
+                <label class="selector-label">Primary Competitor</label>
+                <select class="selector-dropdown" id="primaryCompetitor">
+                    <option value="competitor_a">Competitor A</option>
+                    <option value="competitor_b">Competitor B</option>
+                    <option value="competitor_c">Competitor C</option>
+                    <option value="competitor_d">Competitor D</option>
+                </select>
+            </div>
+            <div class="selector-group">
+                <label class="selector-label">Time Range</label>
+                <select class="selector-dropdown" id="timeRange">
+                    <option value="7d">Last 7 Days</option>
+                    <option value="30d" selected>Last 30 Days</option>
+                    <option value="90d">Last 90 Days</option>
+                    <option value="custom">Custom Range</option>
+                </select>
+            </div>
+            <div class="selector-group">
+                <label class="selector-label">Query Category</label>
+                <select class="selector-dropdown" id="queryCategory">
+                    <option value="all" selected>All Categories</option>
+                    <option value="product">Product Features</option>
+                    <option value="comparison">Comparisons</option>
+                    <option value="howto">How-to Guides</option>
+                    <option value="reviews">Reviews</option>
+                </select>
+            </div>
+            <button class="compare-btn" onclick="compareCompetitors()">Compare Performance</button>
+        </div>
+
+        <!-- Key Metrics Overview -->
+        <div class="metrics-overview">
+            <div class="metric-card primary">
+                <div class="metric-header">
+                    <span class="metric-title">Your Share of Voice</span>
+                    <span class="metric-trend trend-up">↑ 3.2%</span>
+                </div>
+                <div class="metric-value">28.5%</div>
+                <div class="metric-comparison">vs 31.2% Competitor A</div>
+            </div>
+            <div class="metric-card warning">
+                <div class="metric-header">
+                    <span class="metric-title">Content Gap Score</span>
+                    <span class="metric-trend trend-down">↓ 2.1%</span>
+                </div>
+                <div class="metric-value">67</div>
+                <div class="metric-comparison">23 critical gaps identified</div>
+            </div>
+            <div class="metric-card">
+                <div class="metric-header">
+                    <span class="metric-title">AI Citation Rate</span>
+                    <span class="metric-trend trend-up">↑ 5.7%</span>
+                </div>
+                <div class="metric-value">42.3%</div>
+                <div class="metric-comparison">Industry avg: 35.8%</div>
+            </div>
+            <div class="metric-card danger">
+                <div class="metric-header">
+                    <span class="metric-title">Sentiment Delta</span>
+                    <span class="metric-trend trend-down">↓ 8.4%</span>
+                </div>
+                <div class="metric-value">-12.5%</div>
+                <div class="metric-comparison">Behind top competitor</div>
+            </div>
+        </div>
+
+        <!-- Competition Analysis Charts -->
+        <div class="analysis-section">
+            <!-- Share of Voice Trend -->
+            <div class="analysis-card">
+                <div class="card-header">
+                    <h3 class="card-title">Share of Voice Trend</h3>
+                    <div class="card-actions">
+                        <button class="card-action-btn active" onclick="updateSOVChart('7d')">7D</button>
+                        <button class="card-action-btn" onclick="updateSOVChart('30d')">30D</button>
+                        <button class="card-action-btn" onclick="updateSOVChart('90d')">90D</button>
+                    </div>
+                </div>
+                <div id="sov-trend-chart" class="chart-container"></div>
+            </div>
+
+            <!-- Platform Performance Comparison -->
+            <div class="analysis-card">
+                <div class="card-header">
+                    <h3 class="card-title">Platform Performance Matrix</h3>
+                </div>
+                <div id="platform-matrix-chart" class="chart-container"></div>
+            </div>
+
+            <!-- Content Gap Analysis -->
+            <div class="analysis-card full-width">
+                <div class="card-header">
+                    <h3 class="card-title">Critical Content Gaps</h3>
+                    <div class="card-actions">
+                        <button class="card-action-btn" onclick="exportGaps()">Export Gaps</button>
+                    </div>
+                </div>
+                <div class="gap-analysis-table">
+                    <table class="gap-table">
+                        <thead>
+                            <tr>
+                                <th>Query Type</th>
+                                <th>Competitor Coverage</th>
+                                <th>Your Coverage</th>
+                                <th>Gap Score</th>
+                                <th>Priority</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody id="gap-table-body">
+                            <tr>
+                                <td>Best project management software</td>
+                                <td>85%</td>
+                                <td>12%</td>
+                                <td>-73%</td>
+                                <td><span class="gap-severity critical">Critical</span></td>
+                                <td><a href="#" style="color: #00e5ff;">Optimize Content</a></td>
+                            </tr>
+                            <tr>
+                                <td>How to choose CRM tools</td>
+                                <td>76%</td>
+                                <td>34%</td>
+                                <td>-42%</td>
+                                <td><span class="gap-severity high">High</span></td>
+                                <td><a href="#" style="color: #00e5ff;">Create Guide</a></td>
+                            </tr>
+                            <tr>
+                                <td>Enterprise software comparison</td>
+                                <td>62%</td>
+                                <td>58%</td>
+                                <td>-4%</td>
+                                <td><span class="gap-severity low">Low</span></td>
+                                <td><a href="#" style="color: #00e5ff;">Enhance</a></td>
+                            </tr>
+                            <tr>
+                                <td>SaaS pricing models</td>
+                                <td>91%</td>
+                                <td>23%</td>
+                                <td>-68%</td>
+                                <td><span class="gap-severity critical">Critical</span></td>
+                                <td><a href="#" style="color: #00e5ff;">Create Content</a></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Query Performance Radar -->
+            <div class="analysis-card">
+                <div class="card-header">
+                    <h3 class="card-title">Query Category Performance</h3>
+                </div>
+                <div id="query-radar-chart" class="chart-container"></div>
+            </div>
+
+            <!-- Sentiment Analysis -->
+            <div class="analysis-card">
+                <div class="card-header">
+                    <h3 class="card-title">Brand Sentiment Comparison</h3>
+                </div>
+                <div id="sentiment-chart" class="chart-container"></div>
+            </div>
+        </div>
+
+        <!-- AI Platform Performance -->
+        <div class="analysis-card full-width">
+            <div class="card-header">
+                <h3 class="card-title">AI Platform Performance Breakdown</h3>
+            </div>
+            <div class="platform-grid">
+                <div class="platform-card">
+                    <div class="platform-header">
+                        <div class="platform-icon chatgpt">C</div>
+                        <div>
+                            <h4 style="font-size: 16px; margin-bottom: 4px;">ChatGPT</h4>
+                            <p style="font-size: 12px; color: #8892b0;">Browse & Plugins</p>
+                        </div>
+                    </div>
+                    <div class="platform-metrics">
+                        <div class="platform-metric">
+                            <span class="platform-metric-label">Your Mention Rate</span>
+                            <span class="platform-metric-value">31.2%</span>
+                        </div>
+                        <div class="platform-metric">
+                            <span class="platform-metric-label">Competitor A</span>
+                            <span class="platform-metric-value" style="color: #f44336;">42.8%</span>
+                        </div>
+                        <div class="platform-metric">
+                            <span class="platform-metric-label">Gap</span>
+                            <span class="platform-metric-value" style="color: #ff9800;">-11.6%</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="platform-card">
+                    <div class="platform-header">
+                        <div class="platform-icon google">G</div>
+                        <div>
+                            <h4 style="font-size: 16px; margin-bottom: 4px;">Google AI</h4>
+                            <p style="font-size: 12px; color: #8892b0;">AI Overviews</p>
+                        </div>
+                    </div>
+                    <div class="platform-metrics">
+                        <div class="platform-metric">
+                            <span class="platform-metric-label">Your Mention Rate</span>
+                            <span class="platform-metric-value">28.5%</span>
+                        </div>
+                        <div class="platform-metric">
+                            <span class="platform-metric-label">Competitor A</span>
+                            <span class="platform-metric-value" style="color: #4caf50;">25.3%</span>
+                        </div>
+                        <div class="platform-metric">
+                            <span class="platform-metric-label">Gap</span>
+                            <span class="platform-metric-value" style="color: #4caf50;">+3.2%</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="platform-card">
+                    <div class="platform-header">
+                        <div class="platform-icon perplexity">P</div>
+                        <div>
+                            <h4 style="font-size: 16px; margin-bottom: 4px;">Perplexity</h4>
+                            <p style="font-size: 12px; color: #8892b0;">AI Search</p>
+                        </div>
+                    </div>
+                    <div class="platform-metrics">
+                        <div class="platform-metric">
+                            <span class="platform-metric-label">Your Mention Rate</span>
+                            <span class="platform-metric-value">22.7%</span>
+                        </div>
+                        <div class="platform-metric">
+                            <span class="platform-metric-label">Competitor A</span>
+                            <span class="platform-metric-value" style="color: #f44336;">38.9%</span>
+                        </div>
+                        <div class="platform-metric">
+                            <span class="platform-metric-label">Gap</span>
+                            <span class="platform-metric-value" style="color: #f44336;">-16.2%</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="platform-card">
+                    <div class="platform-header">
+                        <div class="platform-icon claude">C</div>
+                        <div>
+                            <h4 style="font-size: 16px; margin-bottom: 4px;">Claude</h4>
+                            <p style="font-size: 12px; color: #8892b0;">AI Assistant</p>
+                        </div>
+                    </div>
+                    <div class="platform-metrics">
+                        <div class="platform-metric">
+                            <span class="platform-metric-label">Your Mention Rate</span>
+                            <span class="platform-metric-value">19.4%</span>
+                        </div>
+                        <div class="platform-metric">
+                            <span class="platform-metric-label">Competitor A</span>
+                            <span class="platform-metric-value" style="color: #f44336;">31.2%</span>
+                        </div>
+                        <div class="platform-metric">
+                            <span class="platform-metric-label">Gap</span>
+                            <span class="platform-metric-value" style="color: #ff9800;">-11.8%</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Competitive Insights -->
+        <div class="insights-panel">
+            <div class="card-header">
+                <h3 class="card-title">Strategic Insights & Recommendations</h3>
+            </div>
+            <div class="insights-grid">
+                <div class="insight-card">
+                    <div class="insight-icon">🎯</div>
+                    <h4 class="insight-title">Critical Gap in ChatGPT Coverage</h4>
+                    <p class="insight-description">Competitor A dominates 42.8% of ChatGPT responses for "project management" queries. Analysis shows they use structured FAQ format with comparison tables.</p>
+                    <div class="insight-action" onclick="viewStrategy()">View Optimization Strategy →</div>
+                </div>
+                <div class="insight-card">
+                    <div class="insight-icon">📈</div>
+                    <h4 class="insight-title">Opportunity in Long-tail Queries</h4>
+                    <p class="insight-description">67% of "how to implement [product]" queries show no competitor presence. Creating step-by-step guides could capture this segment.</p>
+                    <div class="insight-action" onclick="createContent()">Create Content Plan →</div>
+                </div>
+                <div class="insight-card">
+                    <div class="insight-icon">⚡</div>
+                    <h4 class="insight-title">Schema Markup Advantage</h4>
+                    <p class="insight-description">Competitor B increased mention rate by 23% after implementing HowTo and FAQ schema. Your current schema coverage is only 12%.</p>
+                    <div class="insight-action" onclick="implementSchema()">Implement Schema →</div>
+                </div>
+                <div class="insight-card">
+                    <div class="insight-icon">🔍</div>
+                    <h4 class="insight-title">Sentiment Risk Detected</h4>
+                    <p class="insight-description">Negative sentiment in AI responses increased 8.4% due to outdated pricing information. Competitor responses show 85% positive sentiment.</p>
+                    <div class="insight-action" onclick="updateContent()">Update Content →</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Competitive Landscape Overview -->
+        <div class="analysis-card full-width">
+            <div class="card-header">
+                <h3 class="card-title">Competitive Landscape Overview</h3>
+            </div>
+            <div id="competitive-landscape-chart" class="large-chart-container"></div>
+        </div>
+    </main>
+
+    <script>
+        // Initialize all charts
+        let sovTrendChart, platformMatrixChart, queryRadarChart, sentimentChart, competitiveLandscapeChart;
+
+        // Initialize charts on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            initializeCharts();
+            checkForAlerts();
+            startRealtimeUpdates();
+        });
+
+        function initializeCharts() {
+            // Share of Voice Trend Chart
+            sovTrendChart = echarts.init(document.getElementById('sov-trend-chart'));
+            const sovTrendOption = {
+                tooltip: {
+                    trigger: 'axis',
+                    backgroundColor: 'rgba(0, 0, 0, 0.8)',
+                    textStyle: { color: '#fff' }
+                },
+                legend: {
+                    data: ['Your Brand', 'Competitor A', 'Competitor B', 'Competitor C'],
+                    textStyle: { color: '#8892b0' },
+                    top: 10
+                },
+                grid: {
+                    left: '3%',
+                    right: '4%',
+                    bottom: '3%',
+                    top: '15%',
+                    containLabel: true
+                },
+                xAxis: {
+                    type: 'category',
+                    boundaryGap: false,
+                    data: generateDateLabels(30),
+                    axisLine: { lineStyle: { color: '#3a4f6f' } },
+                    axisLabel: { color: '#8892b0', interval: 4 }
+                },
+                yAxis: {
+                    type: 'value',
+                    axisLine: { lineStyle: { color: '#3a4f6f' } },
+                    axisLabel: { color: '#8892b0', formatter: '{value}%' },
+                    splitLine: { lineStyle: { color: '#2a3f5f' } }
+                },
+                series: [
+                    {
+                        name: 'Your Brand',
+                        type: 'line',
+                        smooth: true,
+                        data: generateTrendData(30, 25, 30),
+                        itemStyle: { color: '#00e5ff' },
+                        areaStyle: {
+                            color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
+                                { offset: 0, color: 'rgba(0, 229, 255, 0.3)' },
+                                { offset: 1, color: 'rgba(0, 229, 255, 0.05)' }
+                            ])
+                        }
+                    },
+                    {
+                        name: 'Competitor A',
+                        type: 'line',
+                        smooth: true,
+                        data: generateTrendData(30, 28, 35),
+                        itemStyle: { color: '#f44336' }
+                    },
+                    {
+                        name: 'Competitor B',
+                        type: 'line',
+                        smooth: true,
+                        data: generateTrendData(30, 20, 25),
+                        itemStyle: { color: '#ff9800' }
+                    },
+                    {
+                        name: 'Competitor C',
+                        type: 'line',
+                        smooth: true,
+                        data: generateTrendData(30, 15, 20),
+                        itemStyle: { color: '#4caf50' }
+                    }
+                ]
+            };
+            sovTrendChart.setOption(sovTrendOption);
+
+            // Platform Performance Matrix
+            platformMatrixChart = echarts.init(document.getElementById('platform-matrix-chart'));
+            const platformMatrixOption = {
+                tooltip: {
+                    position: 'top',
+                    backgroundColor: 'rgba(0, 0, 0, 0.8)',
+                    textStyle: { color: '#fff' }
+                },
+                grid: {
+                    left: '15%',
+                    right: '5%',
+                    bottom: '15%',
+                    top: '5%',
+                    containLabel: true
+                },
+                xAxis: {
+                    type: 'category',
+                    data: ['ChatGPT', 'Google AI', 'Perplexity', 'Claude'],
+                    splitArea: { show: true },
+                    axisLine: { lineStyle: { color: '#3a4f6f' } },
+                    axisLabel: { color: '#8892b0' }
+                },
+                yAxis: {
+                    type: 'category',
+                    data: ['Your Brand', 'Competitor A', 'Competitor B', 'Competitor C'],
+                    splitArea: { show: true },
+                    axisLine: { lineStyle: { color: '#3a4f6f' } },
+                    axisLabel: { color: '#8892b0' }
+                },
+                visualMap: {
+                    min: 0,
+                    max: 50,
+                    calculable: true,
+                    orient: 'horizontal',
+                    left: 'center',
+                    bottom: '0%',
+                    textStyle: { color: '#8892b0' },
+                    inRange: {
+                        color: ['#313695', '#4575b4', '#74add1', '#abd9e9', '#e0f3f8', '#ffffbf', '#fee090', '#fdae61', '#f46d43', '#d73027', '#a50026']
+                    }
+                },
+                series: [{
+                    name: 'Mention Rate',
+                    type: 'heatmap',
+                    data: generateHeatmapData(),
+                    label: { show: true },
+                    emphasis: {
+                        itemStyle: {
+                            shadowBlur: 10,
+                            shadowColor: 'rgba(0, 0, 0, 0.5)'
+                        }
+                    }
+                }]
+            };
+            platformMatrixChart.setOption(platformMatrixOption);
+
+            // Query Category Radar Chart
+            queryRadarChart = echarts.init(document.getElementById('query-radar-chart'));
+            const queryRadarOption = {
+                tooltip: {
+                    backgroundColor: 'rgba(0, 0, 0, 0.8)',
+                    textStyle: { color: '#fff' }
+                },
+                legend: {
+                    data: ['Your Brand', 'Competitor A'],
+                    textStyle: { color: '#8892b0' }
+                },
+                radar: {
+                    indicator: [
+                        { name: 'Product Features', max: 100 },
+                        { name: 'Comparisons', max: 100 },
+                        { name: 'How-to Guides', max: 100 },
+                        { name: 'Reviews', max: 100 },
+                        { name: 'Pricing', max: 100 },
+                        { name: 'Support', max: 100 }
+                    ],
+                    splitArea: {
+                        areaStyle: {
+                            color: ['rgba(0, 229, 255, 0.05)', 'rgba(0, 229, 255, 0.1)']
+                        }
+                    },
+                    axisLine: { lineStyle: { color: '#3a4f6f' } },
+                    splitLine: { lineStyle: { color: '#3a4f6f' } },
+                    axisName: { color: '#8892b0' }
+                },
+                series: [{
+                    name: 'Query Performance',
+                    type: 'radar',
+                    data: [
+                        {
+                            value: [65, 42, 78, 55, 38, 72],
+                            name: 'Your Brand',
+                            lineStyle: { color: '#00e5ff', width: 3 },
+                            areaStyle: { color: 'rgba(0, 229, 255, 0.3)' }
+                        },
+                        {
+                            value: [82, 75, 45, 68, 88, 65],
+                            name: 'Competitor A',
+                            lineStyle: { color: '#f44336' },
+                            areaStyle: { color: 'rgba(244, 67, 54, 0.2)' }
+                        }
+                    ]
+                }]
+            };
+            queryRadarChart.setOption(queryRadarOption);
+
+            // Sentiment Analysis Chart
+            sentimentChart = echarts.init(document.getElementById('sentiment-chart'));
+            const sentimentOption = {
+                tooltip: {
+                    trigger: 'axis',
+                    axisPointer: { type: 'shadow' },
+                    backgroundColor: 'rgba(0, 0, 0, 0.8)',
+                    textStyle: { color: '#fff' }
+                },
+                legend: {
+                    data: ['Positive', 'Neutral', 'Negative'],
+                    textStyle: { color: '#8892b0' }
+                },
+                grid: {
+                    left: '3%',
+                    right: '4%',
+                    bottom: '3%',
+                    containLabel: true
+                },
+                xAxis: {
+                    type: 'value',
+                    axisLine: { lineStyle: { color: '#3a4f6f' } },
+                    axisLabel: { color: '#8892b0', formatter: '{value}%' },
+                    splitLine: { lineStyle: { color: '#2a3f5f' } }
+                },
+                yAxis: {
+                    type: 'category',
+                    data: ['Your Brand', 'Competitor A', 'Competitor B', 'Competitor C'],
+                    axisLine: { lineStyle: { color: '#3a4f6f' } },
+                    axisLabel: { color: '#8892b0' }
+                },
+                series: [
+                    {
+                        name: 'Positive',
+                        type: 'bar',
+                        stack: 'total',
+                        data: [45, 68, 52, 41],
+                        itemStyle: { color: '#4caf50' }
+                    },
+                    {
+                        name: 'Neutral',
+                        type: 'bar',
+                        stack: 'total',
+                        data: [35, 22, 33, 38],
+                        itemStyle: { color: '#2196f3' }
+                    },
+                    {
+                        name: 'Negative',
+                        type: 'bar',
+                        stack: 'total',
+                        data: [20, 10, 15, 21],
+                        itemStyle: { color: '#f44336' }
+                    }
+                ]
+            };
+            sentimentChart.setOption(sentimentOption);
+
+            // Competitive Landscape Chart
+            competitiveLandscapeChart = echarts.init(document.getElementById('competitive-landscape-chart'));
+            const competitiveLandscapeOption = {
+                tooltip: {
+                    trigger: 'item',
+                    backgroundColor: 'rgba(0, 0, 0, 0.8)',
+                    textStyle: { color: '#fff' }
+                },
+                xAxis: {
+                    name: 'AI Citation Rate (%)',
+                    nameLocation: 'middle',
+                    nameGap: 30,
+                    type: 'value',
+                    min: 0,
+                    max: 100,
+                    axisLine: { lineStyle: { color: '#3a4f6f' } },
+                    axisLabel: { color: '#8892b0' },
+                    splitLine: { lineStyle: { color: '#2a3f5f' } }
+                },
+                yAxis: {
+                    name: 'Share of Voice (%)',
+                    nameLocation: 'middle',
+                    nameGap: 30,
+                    type: 'value',
+                    min: 0,
+                    max: 50,
+                    axisLine: { lineStyle: { color: '#3a4f6f' } },
+                    axisLabel: { color: '#8892b0' },
+                    splitLine: { lineStyle: { color: '#2a3f5f' } }
+                },
+                grid: {
+                    left: '5%',
+                    right: '5%',
+                    bottom: '10%',
+                    top: '10%',
+                    containLabel: true
+                },
+                series: [{
+                    name: 'Competitive Position',
+                    type: 'scatter',
+                    symbolSize: function (data) {
+                        return Math.sqrt(data[2]) * 5;
+                    },
+                    data: [
+                        [42.3, 28.5, 850, 'Your Brand'],
+                        [58.7, 31.2, 1200, 'Competitor A'],
+                        [35.2, 22.8, 650, 'Competitor B'],
+                        [28.9, 18.5, 450, 'Competitor C'],
+                        [45.6, 25.3, 720, 'Competitor D']
+                    ],
+                    label: {
+                        show: true,
+                        formatter: function (param) {
+                            return param.data[3];
+                        },
+                        position: 'top',
+                        color: '#fff'
+                    },
+                    itemStyle: {
+                        color: function (params) {
+                            const colors = ['#00e5ff', '#f44336', '#ff9800', '#4caf50', '#9c27b0'];
+                            return colors[params.dataIndex];
+                        }
+                    }
+                }]
+            };
+            competitiveLandscapeChart.setOption(competitiveLandscapeOption);
+        }
+
+        // Helper functions
+        function generateDateLabels(days) {
+            const labels = [];
+            const today = new Date();
+            for (let i = days - 1; i >= 0; i--) {
+                const date = new Date(today);
+                date.setDate(date.getDate() - i);
+                labels.push(date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' }));
+            }
+            return labels;
+        }
+
+        function generateTrendData(count, min, max) {
+            const data = [];
+            let current = (min + max) / 2;
+            for (let i = 0; i < count; i++) {
+                current += (Math.random() - 0.5) * 5;
+                current = Math.max(min, Math.min(max, current));
+                data.push(Math.round(current * 10) / 10);
+            }
+            return data;
+        }
+
+        function generateHeatmapData() {
+            const data = [];
+            const platforms = 4;
+            const brands = 4;
+            
+            for (let i = 0; i < brands; i++) {
+                for (let j = 0; j < platforms; j++) {
+                    data.push([j, i, Math.floor(Math.random() * 50)]);
+                }
+            }
+            return data;
+        }
+
+        // Action functions
+        function compareCompetitors() {
+            // Show loading state
+            document.querySelectorAll('.chart-container').forEach(container => {
+                container.innerHTML = '<div style="display: flex; justify-content: center; align-items: center; height: 100%;"><div class="loading"></div></div>';
+            });
+
+            // Simulate data loading and refresh charts
+            setTimeout(() => {
+                initializeCharts();
+                showNotification('Analysis complete', 'Competitor comparison has been updated with latest data.');
+            }, 2000);
+        }
+
+        function updateSOVChart(timeRange) {
+            const buttons = document.querySelectorAll('.card-action-btn');
+            buttons.forEach(btn => btn.classList.remove('active'));
+            event.target.classList.add('active');
+
+            // Update chart based on time range
+            const days = timeRange === '7d' ? 7 : timeRange === '30d' ? 30 : 90;
+            const newData = {
+                xAxis: { data: generateDateLabels(days) },
+                series: [
+                    { data: generateTrendData(days, 25, 30) },
+                    { data: generateTrendData(days, 28, 35) },
+                    { data: generateTrendData(days, 20, 25) },
+                    { data: generateTrendData(days, 15, 20) }
+                ]
+            };
+            sovTrendChart.setOption(newData);
+        }
+
+        function checkForAlerts() {
+            // Simulate checking for critical alerts
+            const hasAlert = Math.random() > 0.7; // 30% chance of alert
+            if (hasAlert) {
+                document.getElementById('alertBanner').style.display = 'flex';
+            }
+        }
+
+        function startRealtimeUpdates() {
+            // Simulate real-time updates every 30 seconds
+            setInterval(() => {
+                // Update metrics
+                updateMetrics();
+            }, 30000);
+        }
+
+        function updateMetrics() {
+            // Simulate metric updates
+            const sovValue = document.querySelector('.metric-value');
+            const currentValue = parseFloat(sovValue.textContent);
+            const newValue = currentValue + (Math.random() - 0.5) * 2;
+            sovValue.textContent = newValue.toFixed(1) + '%';
+        }
+
+        function showNotification(title, message) {
+            // Simple notification (in production, use a proper notification library)
+            console.log(`${title}: ${message}`);
+        }
+
+        // Export and action functions
+        function exportReport() {
+            showNotification('Export initiated', 'Competitive intelligence report is being generated...');
+        }
+
+        function scheduleAlert() {
+            showNotification('Alert configuration', 'Configure competitive alerts in settings.');
+        }
+
+        function runAnalysis() {
+            compareCompetitors();
+        }
+
+        function viewDetails() {
+            showNotification('Gap details', 'Loading detailed gap analysis...');
+        }
+
+        function exportGaps() {
+            showNotification('Export gaps', 'Exporting content gap analysis to CSV...');
+        }
+
+        function viewStrategy() {
+            showNotification('Strategy', 'Loading optimization strategy for ChatGPT coverage...');
+        }
+
+        function createContent() {
+            showNotification('Content plan', 'Opening content planning tool...');
+        }
+
+        function implementSchema() {
+            showNotification('Schema markup', 'Loading schema implementation guide...');
+        }
+
+        function updateContent() {
+            showNotification('Content update', 'Opening content management system...');
+        }
+
+        // Window resize handler
+        window.addEventListener('resize', () => {
+            sovTrendChart && sovTrendChart.resize();
+            platformMatrixChart && platformMatrixChart.resize();
+            queryRadarChart && queryRadarChart.resize();
+            sentimentChart && sentimentChart.resize();
+            competitiveLandscapeChart && competitiveLandscapeChart.resize();
+        });
+    </script>
+</body>
+</html>
