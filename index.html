@@ -304,12 +304,21 @@
 
         // Initialize on page load
         document.addEventListener('DOMContentLoaded', function() {
+            // Check if there's a hash in the URL
+            const hash = window.location.hash.slice(1);
+            const pageToLoad = hash || 'eureka-geo-overview';
+            
+            // Clean the URL by removing the hash
+            if (hash) {
+                history.replaceState({ page: pageToLoad }, '', window.location.pathname);
+            }
+            
             // Expand first menu by default
             const firstMenu = document.querySelector('.menu-header');
             toggleMenu(firstMenu);
             
-            // Load default page
-            loadPage('eureka-geo-overview');
+            // Load the appropriate page
+            loadPage(pageToLoad);
             
             // Add click handlers to all submenu items
             document.querySelectorAll('.submenu-item').forEach(item => {
@@ -356,8 +365,8 @@
                 console.log('Page loaded:', pageName);
                 currentPage = pageName;
                 
-                // Update browser history
-                history.pushState({ page: pageName }, '', `#${pageName}`);
+                // Update browser history without changing URL
+                history.replaceState({ page: pageName }, '', window.location.pathname);
             };
             
             iframe.onerror = function() {
