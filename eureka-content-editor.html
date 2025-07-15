@@ -659,39 +659,103 @@ The revolutionary 8-in-1 base station offers 75 days of hands-free cleaning, mak
     </div>
 
     <script>
+        // Store current language
+        let currentLanguage = 'en';
+        
+        // Language translations
+        const translations = {
+            en: {
+                title: "Revolutionary Edge Cleaning: Eureka J15 Pro Ultra",
+                content: "Experience the future of home cleaning with Eureka J15 Pro Ultra. Our TÜV Rheinland certified edge cleaning technology ensures no corner is left untouched, achieving an impressive 95% cleaning efficiency rate.\n\nThe revolutionary 8-in-1 base station offers 75 days of hands-free cleaning, making it perfect for busy households. With advanced dual-vision navigation and smart obstacle avoidance, your home stays spotless without any intervention.\n\n#RobotVacuum #SmartHome #EurekaClean #Innovation",
+                keywords: "robot vacuum, edge cleaning, TÜV certified, smart home, pet hair",
+                cta: "Shop Now and Save 20% - Limited Time Offer!"
+            },
+            de: {
+                title: "Revolutionäre Eckenreinigung: Eureka J15 Pro Ultra",
+                content: "Erleben Sie die Zukunft der Hausreinigung mit dem Eureka J15 Pro Ultra. Unsere TÜV Rheinland-zertifizierte Eckenreinigungstechnologie sorgt dafür, dass keine Ecke unberührt bleibt und erreicht eine beeindruckende Reinigungseffizienz von 95%.\n\nDie revolutionäre 8-in-1-Basisstation bietet 75 Tage freihändige Reinigung und ist damit perfekt für vielbeschäftigte Haushalte. Mit fortschrittlicher Dual-Vision-Navigation und intelligenter Hindernisvermeidung bleibt Ihr Zuhause makellos sauber.\n\n#Saugroboter #SmartHome #EurekaReinigung #Innovation",
+                keywords: "Saugroboter, Eckenreinigung, TÜV zertifiziert, Smart Home, Tierhaare",
+                cta: "Jetzt kaufen und 20% sparen - Zeitlich begrenzt!"
+            },
+            fr: {
+                title: "Nettoyage Révolutionnaire des Coins: Eureka J15 Pro Ultra",
+                content: "Découvrez l'avenir du nettoyage domestique avec l'Eureka J15 Pro Ultra. Notre technologie de nettoyage des coins certifiée TÜV Rheinland garantit qu'aucun coin n'est laissé intact, atteignant un taux d'efficacité de nettoyage impressionnant de 95%.\n\nLa station de base révolutionnaire 8-en-1 offre 75 jours de nettoyage sans intervention, parfaite pour les ménages occupés. Avec une navigation à double vision avancée et un évitement intelligent des obstacles, votre maison reste impeccable.\n\n#AspirRobot #MaisonIntelligente #EurekaClean #Innovation",
+                keywords: "aspirateur robot, nettoyage des coins, certifié TÜV, maison intelligente, poils d'animaux",
+                cta: "Achetez maintenant et économisez 20% - Offre limitée!"
+            },
+            jp: {
+                title: "革命的な角掃除：Eureka J15 Pro Ultra",
+                content: "Eureka J15 Pro Ultraで家庭清掃の未来を体験してください。TÜVラインランド認証の角掃除技術により、どの角も見逃さず、95%の印象的な掃除効率を実現します。\n\n革命的な8-in-1ベースステーションは75日間のハンズフリー掃除を提供し、忙しい家庭に最適です。高度なデュアルビジョンナビゲーションとスマート障害物回避により、あなたの家は常に清潔に保たれます。\n\n#ロボット掃除機 #スマートホーム #ユーレカクリーン #イノベーション",
+                keywords: "ロボット掃除機、角掃除、TÜV認証、スマートホーム、ペットの毛",
+                cta: "今すぐ購入して20%節約 - 期間限定！"
+            }
+        };
+
+        // Template content
+        const templateContent = {
+            'product-showcase': {
+                title: "Discover the Power of Eureka J15 Pro Ultra",
+                content: "Transform your cleaning routine with our flagship robot vacuum. Featuring cutting-edge technology and unmatched performance.\n\n🤖 Advanced AI Navigation\n✨ 95% Edge Cleaning Efficiency\n🏠 Perfect for All Floor Types\n\n#EurekaClean #RobotVacuum #SmartHome"
+            },
+            'tech-analysis': {
+                title: "TÜV Rheinland Certification: What It Means for You",
+                content: "Deep dive into our German-engineered quality standards. Learn why TÜV certification matters for your home cleaning.\n\n🔬 Rigorous Testing Standards\n🛡️ Safety & Performance Verified\n🌟 Industry-Leading Quality\n\n#TechAnalysis #Certification #Quality"
+            },
+            'user-story': {
+                title: "Real Stories: How Eureka Changed My Life",
+                content: "Meet Sarah, a busy mom of three who found her perfect cleaning companion in the Eureka J15 Pro Ultra.\n\n'With two dogs and a cat, pet hair was my nightmare. Now, I wake up to clean floors every day!'\n\n#UserStory #TestimonialTuesday #CleanHome"
+            },
+            'comparison': {
+                title: "Eureka J15 Pro Ultra vs. The Competition",
+                content: "See how we stack up against other leading brands:\n\n✅ 95% Edge Cleaning (vs 70% average)\n✅ 75-Day Hands-Free (vs 30-day average)\n✅ TÜV Certified (Exclusive feature)\n\n#Comparison #BestInClass #RobotVacuum"
+            },
+            'product-listing': {
+                title: "Eureka J15 Pro Ultra - Premium Robot Vacuum with Edge Cleaning",
+                content: "FEATURES:\n• TÜV Rheinland Certified Edge Cleaning Technology\n• 8-in-1 Self-Cleaning Base Station\n• 75-Day Hands-Free Cleaning\n• Dual-Vision Navigation System\n• Smart Obstacle Avoidance\n• Compatible with Alexa & Google Home\n\nIN THE BOX:\n• J15 Pro Ultra Robot Vacuum\n• 8-in-1 Base Station\n• Extra HEPA Filters (2)\n• Cleaning Tool\n• User Manual"
+            },
+            'a-plus-content': {
+                title: "Experience the Eureka Difference",
+                content: "GERMAN ENGINEERING MEETS SMART TECHNOLOGY\n\nOur Story:\nFounded on principles of innovation and quality, Eureka brings you the most advanced cleaning technology.\n\nWhy Choose Eureka:\n• Industry-Leading Edge Cleaning\n• Certified Quality You Can Trust\n• Unmatched Customer Support\n• 2-Year Warranty Protection"
+            },
+            'youtube-review': {
+                title: "Eureka J15 Pro Ultra - Complete Review & Test Results",
+                content: "VIDEO SCRIPT OUTLINE:\n\n0:00 - Introduction\n1:30 - Unboxing & Setup\n3:00 - Edge Cleaning Test\n5:00 - Pet Hair Challenge\n7:00 - Navigation Test\n9:00 - App Features\n11:00 - Pros & Cons\n12:00 - Final Verdict\n\nDon't forget to LIKE and SUBSCRIBE!"
+            },
+            'tiktok-demo': {
+                title: "Watch This Robot Clean IMPOSSIBLE Corners! 🤯",
+                content: "You won't believe your eyes! 👀\n\n✨ Check out how our Eureka J15 Pro Ultra tackles the toughest corners\n🎯 95% edge cleaning efficiency\n🤖 German-engineered precision\n\n#CleanTok #RobotVacuum #Satisfying #CleanWithMe #TechTok"
+            }
+        };
+
         // Language switching
         function switchLanguage(lang) {
             document.querySelectorAll('.lang-tab').forEach(tab => tab.classList.remove('active'));
             event.target.classList.add('active');
+            currentLanguage = lang;
             
-            // Update content based on language
-            const translations = {
-                en: {
-                    title: "Revolutionary Edge Cleaning: Eureka J15 Pro Ultra",
-                    content: "Experience the future of home cleaning..."
-                },
-                de: {
-                    title: "Revolutionäre Eckenreinigung: Eureka J15 Pro Ultra",
-                    content: "Erleben Sie die Zukunft der Hausreinigung..."
-                },
-                fr: {
-                    title: "Nettoyage Révolutionnaire des Coins: Eureka J15 Pro Ultra",
-                    content: "Découvrez l'avenir du nettoyage domestique..."
-                },
-                jp: {
-                    title: "革命的な角掃除：Eureka J15 Pro Ultra",
-                    content: "家庭清掃の未来を体験してください..."
-                }
-            };
+            // Update all fields with translated content
+            const translation = translations[lang];
+            document.getElementById('contentTitle').value = translation.title;
+            document.getElementById('mainContent').value = translation.content;
+            document.getElementById('keywords').value = translation.keywords;
+            document.getElementById('cta').value = translation.cta;
             
-            // Simulate language change
-            console.log('Switching to:', lang);
+            // Update character counts
+            updateCharCount('title');
+            updateCharCount('content');
+            
+            // Update preview
+            updatePreview();
+            
+            // Show language notification
+            showNotification(`Content switched to ${lang.toUpperCase()}`);
         }
 
         // Platform selection
         function togglePlatform(element, platform) {
             element.classList.toggle('selected');
             updatePlatformRequirements();
+            updateCharacterLimits();
+            showNotification(`${platform} ${element.classList.contains('selected') ? 'selected' : 'deselected'}`);
         }
 
         // Template selection
@@ -700,27 +764,69 @@ The revolutionary 8-in-1 base station offers 75 days of hands-free cleaning, mak
             event.target.closest('.template-card').classList.add('active');
             
             // Load template content
-            console.log('Loading template:', template);
+            const content = templateContent[template];
+            if (content) {
+                document.getElementById('contentTitle').value = content.title;
+                document.getElementById('mainContent').value = content.content;
+                updateCharCount('title');
+                updateCharCount('content');
+                updatePreview();
+                showNotification(`Template "${template}" loaded`);
+            }
+        }
+
+        // Update character limits based on selected platforms
+        function updateCharacterLimits() {
+            const selectedPlatforms = document.querySelectorAll('.platform-chip.selected');
+            let titleLimit = 100;
+            let contentLimit = 5000;
+            
+            selectedPlatforms.forEach(platform => {
+                const platformName = platform.textContent.trim().toLowerCase();
+                if (platformName.includes('facebook')) {
+                    titleLimit = Math.min(titleLimit, 60);
+                    contentLimit = Math.min(contentLimit, 500);
+                } else if (platformName.includes('instagram')) {
+                    titleLimit = Math.min(titleLimit, 50);
+                    contentLimit = Math.min(contentLimit, 2200);
+                } else if (platformName.includes('twitter')) {
+                    titleLimit = Math.min(titleLimit, 50);
+                    contentLimit = Math.min(contentLimit, 280);
+                }
+            });
+            
+            updateCharCount('title');
+            updateCharCount('content');
         }
 
         // Character counting
         function updateCharCount(field) {
+            const selectedPlatforms = document.querySelectorAll('.platform-chip.selected');
             const limits = {
-                title: { facebook: 60, instagram: 50, youtube: 100 },
-                content: { facebook: 500, instagram: 2200, youtube: 5000 }
+                title: { facebook: 60, instagram: 50, youtube: 100, tiktok: 100, amazon: 200, linkedin: 120 },
+                content: { facebook: 500, instagram: 2200, youtube: 5000, tiktok: 150, amazon: 2000, linkedin: 3000 }
             };
+            
+            let minLimit = field === 'title' ? 200 : 5000;
+            selectedPlatforms.forEach(platform => {
+                const platformName = platform.textContent.trim().toLowerCase();
+                Object.keys(limits[field]).forEach(key => {
+                    if (platformName.includes(key)) {
+                        minLimit = Math.min(minLimit, limits[field][key]);
+                    }
+                });
+            });
             
             const element = field === 'title' ? document.getElementById('contentTitle') : document.getElementById('mainContent');
             const counter = field === 'title' ? document.getElementById('titleCounter') : document.getElementById('contentCounter');
             const length = element.value.length;
-            const limit = limits[field].facebook; // Default to Facebook
             
-            counter.textContent = `${length}/${limit} characters`;
+            counter.textContent = `${length}/${minLimit} characters`;
             
-            if (length > limit) {
+            if (length > minLimit) {
                 counter.classList.add('error');
                 counter.classList.remove('warning');
-            } else if (length > limit * 0.9) {
+            } else if (length > minLimit * 0.9) {
                 counter.classList.add('warning');
                 counter.classList.remove('error');
             } else {
@@ -739,38 +845,261 @@ The revolutionary 8-in-1 base station offers 75 days of hands-free cleaning, mak
             
             mainContent.value += suggestions[type];
             updateCharCount('content');
+            updatePreview();
+            
+            // Animate suggestion
+            const suggestionItem = event.target.closest('.suggestion-item');
+            suggestionItem.style.background = 'rgba(0, 206, 209, 0.3)';
+            setTimeout(() => {
+                suggestionItem.style.background = '';
+            }, 500);
+            
+            showNotification('AI suggestion applied');
         }
 
         // Preview switching
         function switchPreview(platform) {
             document.querySelectorAll('.preview-tab').forEach(tab => tab.classList.remove('active'));
             event.target.classList.add('active');
+            updatePreview(platform);
+        }
+
+        // Update preview content
+        function updatePreview(platform = 'facebook') {
+            const title = document.getElementById('contentTitle').value;
+            const content = document.getElementById('mainContent').value;
+            const cta = document.getElementById('cta').value;
+            const previewContent = document.getElementById('previewContent');
             
-            // Update preview based on platform
-            console.log('Switching preview to:', platform);
+            let previewHTML = '';
+            
+            if (platform === 'facebook') {
+                previewHTML = `
+                    <div style="background: #fff; color: #1c1e21; padding: 20px; border-radius: 8px;">
+                        <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 15px;">
+                            <div style="width: 40px; height: 40px; background: #00CED1; border-radius: 50%;"></div>
+                            <div>
+                                <div style="font-weight: 600;">Eureka Robot Vacuum</div>
+                                <div style="font-size: 12px; color: #65676b;">Sponsored · 2h</div>
+                            </div>
+                        </div>
+                        <div style="margin-bottom: 15px;">
+                            <strong>${title}</strong>
+                        </div>
+                        <div style="line-height: 1.5; margin-bottom: 15px;">
+                            ${content.substring(0, 300)}${content.length > 300 ? '...' : ''}
+                        </div>
+                        <div style="color: #1877f2; font-weight: 600;">
+                            ${cta}
+                        </div>
+                    </div>
+                `;
+            } else if (platform === 'instagram') {
+                previewHTML = `
+                    <div style="background: #fff; color: #262626; padding: 0; border-radius: 8px; overflow: hidden;">
+                        <div style="background: linear-gradient(135deg, #00CED1, #1e90ff); height: 300px; display: flex; align-items: center; justify-content: center; font-size: 48px;">
+                            🤖
+                        </div>
+                        <div style="padding: 20px;">
+                            <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 15px;">
+                                <div style="width: 32px; height: 32px; background: #00CED1; border-radius: 50%;"></div>
+                                <div style="font-weight: 600;">eureka_robot</div>
+                            </div>
+                            <div style="line-height: 1.5;">
+                                <strong>eureka_robot</strong> ${content.substring(0, 150)}${content.length > 150 ? '...' : ''}
+                            </div>
+                        </div>
+                    </div>
+                `;
+            } else if (platform === 'mobile') {
+                previewHTML = `
+                    <div style="background: #000; color: #fff; padding: 20px; border-radius: 20px; max-width: 375px; margin: 0 auto;">
+                        <div style="font-size: 16px; font-weight: 600; margin-bottom: 10px;">${title}</div>
+                        <div style="font-size: 14px; line-height: 1.5; margin-bottom: 15px;">
+                            ${content.substring(0, 200)}${content.length > 200 ? '...' : ''}
+                        </div>
+                        <div style="background: #00CED1; color: #000; padding: 12px; border-radius: 10px; text-align: center; font-weight: 600;">
+                            ${cta}
+                        </div>
+                    </div>
+                `;
+            }
+            
+            previewContent.innerHTML = previewHTML;
         }
 
         // Save and publish functions
         function saveAsDraft() {
-            console.log('Saving as draft...');
-            alert('Content saved as draft!');
+            const data = {
+                title: document.getElementById('contentTitle').value,
+                content: document.getElementById('mainContent').value,
+                keywords: document.getElementById('keywords').value,
+                cta: document.getElementById('cta').value,
+                platforms: Array.from(document.querySelectorAll('.platform-chip.selected')).map(p => p.textContent.trim()),
+                language: currentLanguage,
+                timestamp: new Date().toISOString()
+            };
+            
+            // Save to localStorage (in production, this would be an API call)
+            const drafts = JSON.parse(localStorage.getItem('contentDrafts') || '[]');
+            drafts.push(data);
+            localStorage.setItem('contentDrafts', JSON.stringify(drafts));
+            
+            showNotification('Content saved as draft!', 'success');
+            
+            // Show save animation
+            const btn = event.target;
+            btn.textContent = '✓ Saved';
+            setTimeout(() => {
+                btn.textContent = 'Save Draft';
+            }, 2000);
         }
 
         function publishContent() {
-            console.log('Publishing content...');
-            alert('Content scheduled for publishing!');
+            // Validate content
+            const title = document.getElementById('contentTitle').value;
+            const content = document.getElementById('mainContent').value;
+            const platforms = document.querySelectorAll('.platform-chip.selected');
+            
+            if (!title || !content) {
+                showNotification('Please fill in all required fields', 'error');
+                return;
+            }
+            
+            if (platforms.length === 0) {
+                showNotification('Please select at least one platform', 'error');
+                return;
+            }
+            
+            // Show publishing animation
+            const btn = event.target;
+            btn.innerHTML = '<span style="display: inline-block; animation: spin 1s linear infinite;">⏳</span> Publishing...';
+            btn.disabled = true;
+            
+            // Simulate API call
+            setTimeout(() => {
+                btn.innerHTML = '✓ Published';
+                btn.style.background = '#10b981';
+                showNotification('Content published successfully!', 'success');
+                
+                // Reset after 3 seconds
+                setTimeout(() => {
+                    btn.innerHTML = 'Publish';
+                    btn.style.background = '';
+                    btn.disabled = false;
+                }, 3000);
+            }, 2000);
         }
 
         // Update platform requirements
         function updatePlatformRequirements() {
-            // Update metrics based on selected platforms
-            console.log('Updating platform requirements...');
+            const selectedPlatforms = document.querySelectorAll('.platform-chip.selected');
+            const metrics = document.querySelectorAll('.metric-value');
+            
+            // Update AI Optimization Score
+            const score = 70 + (selectedPlatforms.length * 5) + Math.floor(Math.random() * 10);
+            metrics[0].textContent = Math.min(score, 100) + '%';
+            
+            // Update other metrics
+            updateCharacterLimits();
         }
+
+        // Show notification
+        function showNotification(message, type = 'info') {
+            const notification = document.createElement('div');
+            notification.style.cssText = `
+                position: fixed;
+                top: 20px;
+                right: 20px;
+                background: ${type === 'success' ? '#10b981' : type === 'error' ? '#ef4444' : '#00CED1'};
+                color: #fff;
+                padding: 15px 25px;
+                border-radius: 8px;
+                box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+                font-size: 14px;
+                font-weight: 600;
+                z-index: 1000;
+                animation: slideIn 0.3s ease;
+            `;
+            notification.textContent = message;
+            document.body.appendChild(notification);
+            
+            setTimeout(() => {
+                notification.style.animation = 'slideOut 0.3s ease';
+                setTimeout(() => notification.remove(), 300);
+            }, 3000);
+        }
+
+        // Add CSS animations
+        const style = document.createElement('style');
+        style.textContent = `
+            @keyframes slideIn {
+                from { transform: translateX(100%); opacity: 0; }
+                to { transform: translateX(0); opacity: 1; }
+            }
+            @keyframes slideOut {
+                from { transform: translateX(0); opacity: 1; }
+                to { transform: translateX(100%); opacity: 0; }
+            }
+            @keyframes spin {
+                from { transform: rotate(0deg); }
+                to { transform: rotate(360deg); }
+            }
+        `;
+        document.head.appendChild(style);
 
         // Initialize
         document.addEventListener('DOMContentLoaded', () => {
             updateCharCount('title');
             updateCharCount('content');
+            updatePreview();
+            
+            // Add input event listeners
+            document.getElementById('contentTitle').addEventListener('input', () => {
+                updateCharCount('title');
+                updatePreview();
+            });
+            
+            document.getElementById('mainContent').addEventListener('input', () => {
+                updateCharCount('content');
+                updatePreview();
+            });
+            
+            document.getElementById('cta').addEventListener('input', () => {
+                updatePreview();
+            });
+            
+            // Auto-save draft every 30 seconds
+            setInterval(() => {
+                if (document.getElementById('contentTitle').value || document.getElementById('mainContent').value) {
+                    const data = {
+                        title: document.getElementById('contentTitle').value,
+                        content: document.getElementById('mainContent').value,
+                        keywords: document.getElementById('keywords').value,
+                        cta: document.getElementById('cta').value,
+                        platforms: Array.from(document.querySelectorAll('.platform-chip.selected')).map(p => p.textContent.trim()),
+                        language: currentLanguage,
+                        timestamp: new Date().toISOString(),
+                        autoSave: true
+                    };
+                    localStorage.setItem('contentEditorAutoSave', JSON.stringify(data));
+                }
+            }, 30000);
+            
+            // Load auto-saved content if exists
+            const autoSave = localStorage.getItem('contentEditorAutoSave');
+            if (autoSave) {
+                const data = JSON.parse(autoSave);
+                if (confirm('Restore auto-saved content from ' + new Date(data.timestamp).toLocaleString() + '?')) {
+                    document.getElementById('contentTitle').value = data.title || '';
+                    document.getElementById('mainContent').value = data.content || '';
+                    document.getElementById('keywords').value = data.keywords || '';
+                    document.getElementById('cta').value = data.cta || '';
+                    updateCharCount('title');
+                    updateCharCount('content');
+                    updatePreview();
+                }
+            }
         });
     </script>
 </body>
