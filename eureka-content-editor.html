@@ -1,0 +1,777 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Eureka Multi-Language Content Editor</title>
+    <script src="https://cdn.jsdelivr.net/npm/echarts@5.4.3/dist/echarts.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: #0a0f1c;
+            color: #e0e0e0;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            overflow-x: hidden;
+        }
+
+        .editor-container {
+            display: flex;
+            height: 100vh;
+        }
+
+        /* Sidebar */
+        .editor-sidebar {
+            width: 300px;
+            background: #1a2332;
+            border-right: 1px solid rgba(255, 255, 255, 0.1);
+            overflow-y: auto;
+        }
+
+        .sidebar-header {
+            padding: 20px;
+            background: linear-gradient(135deg, #1e3c72 0%, #2a4e80 100%);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .sidebar-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: #fff;
+            margin-bottom: 10px;
+        }
+
+        .template-section {
+            padding: 20px;
+        }
+
+        .section-title {
+            font-size: 14px;
+            font-weight: 600;
+            color: #9ca3af;
+            margin-bottom: 15px;
+            text-transform: uppercase;
+        }
+
+        .template-grid {
+            display: grid;
+            gap: 10px;
+        }
+
+        .template-card {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+            padding: 15px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .template-card:hover {
+            background: rgba(0, 206, 209, 0.1);
+            border-color: rgba(0, 206, 209, 0.3);
+        }
+
+        .template-card.active {
+            background: rgba(0, 206, 209, 0.2);
+            border-color: #00CED1;
+        }
+
+        .template-name {
+            font-size: 14px;
+            font-weight: 600;
+            color: #fff;
+            margin-bottom: 5px;
+        }
+
+        .template-desc {
+            font-size: 12px;
+            color: #9ca3af;
+        }
+
+        /* Main Editor */
+        .editor-main {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .editor-header {
+            background: #1a2332;
+            padding: 20px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .header-controls {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .language-tabs {
+            display: flex;
+            gap: 10px;
+        }
+
+        .lang-tab {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            color: #9ca3af;
+            padding: 8px 16px;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-size: 14px;
+        }
+
+        .lang-tab.active {
+            background: rgba(0, 206, 209, 0.2);
+            border-color: #00CED1;
+            color: #00CED1;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 10px;
+        }
+
+        .btn {
+            padding: 8px 20px;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-size: 14px;
+            border: none;
+        }
+
+        .btn-primary {
+            background: #00CED1;
+            color: #0a0f1c;
+            font-weight: 600;
+        }
+
+        .btn-primary:hover {
+            background: #00a8b3;
+        }
+
+        .btn-secondary {
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            color: #fff;
+        }
+
+        .btn-secondary:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        .platform-selector {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .platform-chip {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .platform-chip.selected {
+            background: rgba(0, 206, 209, 0.2);
+            border-color: #00CED1;
+            color: #00CED1;
+        }
+
+        .platform-icon {
+            font-size: 14px;
+        }
+
+        /* Editor Content */
+        .editor-content {
+            flex: 1;
+            padding: 30px;
+            overflow-y: auto;
+        }
+
+        .content-form {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .form-group {
+            margin-bottom: 25px;
+        }
+
+        .form-label {
+            font-size: 14px;
+            font-weight: 600;
+            color: #fff;
+            margin-bottom: 10px;
+            display: block;
+        }
+
+        .form-input,
+        .form-textarea {
+            width: 100%;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            color: #fff;
+            padding: 12px 16px;
+            border-radius: 8px;
+            font-size: 14px;
+            transition: all 0.3s;
+        }
+
+        .form-input:focus,
+        .form-textarea:focus {
+            outline: none;
+            border-color: #00CED1;
+            background: rgba(0, 206, 209, 0.05);
+        }
+
+        .form-textarea {
+            min-height: 200px;
+            resize: vertical;
+        }
+
+        .char-counter {
+            text-align: right;
+            font-size: 12px;
+            color: #9ca3af;
+            margin-top: 5px;
+        }
+
+        .char-counter.warning {
+            color: #f59e0b;
+        }
+
+        .char-counter.error {
+            color: #ef4444;
+        }
+
+        /* AI Assistant */
+        .ai-assistant {
+            background: linear-gradient(135deg, #1a2332 0%, #0f1823 100%);
+            border: 1px solid rgba(0, 206, 209, 0.2);
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 25px;
+        }
+
+        .ai-header {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+
+        .ai-icon {
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, #00CED1, #1e90ff);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+        }
+
+        .ai-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: #fff;
+        }
+
+        .ai-suggestions {
+            display: grid;
+            gap: 10px;
+        }
+
+        .suggestion-item {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+            padding: 12px;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-size: 14px;
+        }
+
+        .suggestion-item:hover {
+            background: rgba(0, 206, 209, 0.1);
+            border-color: rgba(0, 206, 209, 0.3);
+        }
+
+        /* Preview Panel */
+        .preview-panel {
+            background: #1a2332;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            padding: 20px;
+            margin-top: 30px;
+        }
+
+        .preview-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .preview-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: #fff;
+        }
+
+        .preview-tabs {
+            display: flex;
+            gap: 10px;
+        }
+
+        .preview-tab {
+            padding: 6px 12px;
+            border-radius: 6px;
+            font-size: 12px;
+            cursor: pointer;
+            background: rgba(255, 255, 255, 0.05);
+            color: #9ca3af;
+            transition: all 0.3s;
+        }
+
+        .preview-tab.active {
+            background: rgba(0, 206, 209, 0.2);
+            color: #00CED1;
+        }
+
+        .preview-content {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 8px;
+            padding: 20px;
+            min-height: 200px;
+        }
+
+        /* Right Sidebar */
+        .editor-right-sidebar {
+            width: 300px;
+            background: #1a2332;
+            border-left: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 20px;
+            overflow-y: auto;
+        }
+
+        .metrics-panel {
+            margin-bottom: 30px;
+        }
+
+        .metric-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .metric-label {
+            font-size: 14px;
+            color: #9ca3af;
+        }
+
+        .metric-value {
+            font-size: 16px;
+            font-weight: 600;
+            color: #00CED1;
+        }
+
+        /* Responsive */
+        @media (max-width: 1024px) {
+            .editor-right-sidebar {
+                display: none;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .editor-sidebar {
+                display: none;
+            }
+
+            .editor-content {
+                padding: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="editor-container">
+        <!-- Left Sidebar -->
+        <div class="editor-sidebar">
+            <div class="sidebar-header">
+                <h2 class="sidebar-title">Content Templates</h2>
+            </div>
+
+            <div class="template-section">
+                <h3 class="section-title">Social Media</h3>
+                <div class="template-grid">
+                    <div class="template-card active" onclick="selectTemplate('product-showcase')">
+                        <div class="template-name">Product Showcase</div>
+                        <div class="template-desc">Feature key product benefits</div>
+                    </div>
+                    <div class="template-card" onclick="selectTemplate('tech-analysis')">
+                        <div class="template-name">Technical Analysis</div>
+                        <div class="template-desc">Deep dive into technology</div>
+                    </div>
+                    <div class="template-card" onclick="selectTemplate('user-story')">
+                        <div class="template-name">User Story</div>
+                        <div class="template-desc">Customer experience sharing</div>
+                    </div>
+                    <div class="template-card" onclick="selectTemplate('comparison')">
+                        <div class="template-name">Comparison Post</div>
+                        <div class="template-desc">Compare with competitors</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="template-section">
+                <h3 class="section-title">E-commerce</h3>
+                <div class="template-grid">
+                    <div class="template-card" onclick="selectTemplate('product-listing')">
+                        <div class="template-name">Product Listing</div>
+                        <div class="template-desc">Amazon/eBay optimization</div>
+                    </div>
+                    <div class="template-card" onclick="selectTemplate('a-plus-content')">
+                        <div class="template-name">A+ Content</div>
+                        <div class="template-desc">Enhanced brand content</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="template-section">
+                <h3 class="section-title">Video Scripts</h3>
+                <div class="template-grid">
+                    <div class="template-card" onclick="selectTemplate('youtube-review')">
+                        <div class="template-name">YouTube Review</div>
+                        <div class="template-desc">Comprehensive product review</div>
+                    </div>
+                    <div class="template-card" onclick="selectTemplate('tiktok-demo')">
+                        <div class="template-name">TikTok Demo</div>
+                        <div class="template-desc">Quick feature demonstration</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Main Editor -->
+        <div class="editor-main">
+            <div class="editor-header">
+                <div class="header-controls">
+                    <div class="language-tabs">
+                        <div class="lang-tab active" onclick="switchLanguage('en')">English</div>
+                        <div class="lang-tab" onclick="switchLanguage('de')">Deutsch</div>
+                        <div class="lang-tab" onclick="switchLanguage('fr')">Français</div>
+                        <div class="lang-tab" onclick="switchLanguage('jp')">日本語</div>
+                    </div>
+                    <div class="action-buttons">
+                        <button class="btn btn-secondary" onclick="saveAsDraft()">Save Draft</button>
+                        <button class="btn btn-primary" onclick="publishContent()">Publish</button>
+                    </div>
+                </div>
+
+                <div class="platform-selector">
+                    <div class="platform-chip selected" onclick="togglePlatform(this, 'facebook')">
+                        <span class="platform-icon">📘</span> Facebook
+                    </div>
+                    <div class="platform-chip" onclick="togglePlatform(this, 'instagram')">
+                        <span class="platform-icon">📷</span> Instagram
+                    </div>
+                    <div class="platform-chip" onclick="togglePlatform(this, 'youtube')">
+                        <span class="platform-icon">📺</span> YouTube
+                    </div>
+                    <div class="platform-chip" onclick="togglePlatform(this, 'tiktok')">
+                        <span class="platform-icon">🎵</span> TikTok
+                    </div>
+                    <div class="platform-chip" onclick="togglePlatform(this, 'amazon')">
+                        <span class="platform-icon">🛒</span> Amazon
+                    </div>
+                    <div class="platform-chip" onclick="togglePlatform(this, 'linkedin')">
+                        <span class="platform-icon">💼</span> LinkedIn
+                    </div>
+                </div>
+            </div>
+
+            <div class="editor-content">
+                <div class="content-form">
+                    <!-- AI Assistant -->
+                    <div class="ai-assistant">
+                        <div class="ai-header">
+                            <div class="ai-icon">🤖</div>
+                            <div class="ai-title">AI Content Assistant</div>
+                        </div>
+                        <div class="ai-suggestions">
+                            <div class="suggestion-item" onclick="applySuggestion('tuv')">
+                                💡 Highlight TÜV Rheinland certification for German market credibility
+                            </div>
+                            <div class="suggestion-item" onclick="applySuggestion('edge')">
+                                💡 Emphasize edge cleaning technology with 95% efficiency rate
+                            </div>
+                            <div class="suggestion-item" onclick="applySuggestion('pet')">
+                                💡 Include pet hair removal capabilities for pet owner segment
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Content Title -->
+                    <div class="form-group">
+                        <label class="form-label">Content Title</label>
+                        <input type="text" class="form-input" id="contentTitle" 
+                               placeholder="Enter a compelling title..." 
+                               onkeyup="updateCharCount('title')"
+                               value="Revolutionary Edge Cleaning: Eureka J15 Pro Ultra">
+                        <div class="char-counter" id="titleCounter">40/60 characters</div>
+                    </div>
+
+                    <!-- Main Content -->
+                    <div class="form-group">
+                        <label class="form-label">Main Content</label>
+                        <textarea class="form-textarea" id="mainContent" 
+                                  placeholder="Write your content here..."
+                                  onkeyup="updateCharCount('content')">Experience the future of home cleaning with Eureka J15 Pro Ultra. Our TÜV Rheinland certified edge cleaning technology ensures no corner is left untouched, achieving an impressive 95% cleaning efficiency rate.
+
+The revolutionary 8-in-1 base station offers 75 days of hands-free cleaning, making it perfect for busy households. With advanced dual-vision navigation and smart obstacle avoidance, your home stays spotless without any intervention.
+
+#RobotVacuum #SmartHome #EurekaClean #Innovation</textarea>
+                        <div class="char-counter" id="contentCounter">358/500 characters</div>
+                    </div>
+
+                    <!-- Keywords -->
+                    <div class="form-group">
+                        <label class="form-label">SEO Keywords</label>
+                        <input type="text" class="form-input" id="keywords" 
+                               placeholder="Enter keywords separated by commas..."
+                               value="robot vacuum, edge cleaning, TÜV certified, smart home, pet hair">
+                    </div>
+
+                    <!-- Call to Action -->
+                    <div class="form-group">
+                        <label class="form-label">Call to Action</label>
+                        <input type="text" class="form-input" id="cta" 
+                               placeholder="Enter your call to action..."
+                               value="Shop Now and Save 20% - Limited Time Offer!">
+                    </div>
+
+                    <!-- Preview Panel -->
+                    <div class="preview-panel">
+                        <div class="preview-header">
+                            <h3 class="preview-title">Content Preview</h3>
+                            <div class="preview-tabs">
+                                <div class="preview-tab active" onclick="switchPreview('facebook')">Facebook</div>
+                                <div class="preview-tab" onclick="switchPreview('instagram')">Instagram</div>
+                                <div class="preview-tab" onclick="switchPreview('mobile')">Mobile</div>
+                            </div>
+                        </div>
+                        <div class="preview-content" id="previewContent">
+                            <div style="background: #fff; color: #1c1e21; padding: 20px; border-radius: 8px;">
+                                <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 15px;">
+                                    <div style="width: 40px; height: 40px; background: #00CED1; border-radius: 50%;"></div>
+                                    <div>
+                                        <div style="font-weight: 600;">Eureka Robot Vacuum</div>
+                                        <div style="font-size: 12px; color: #65676b;">Sponsored · 2h</div>
+                                    </div>
+                                </div>
+                                <div style="margin-bottom: 15px;">
+                                    <strong>Revolutionary Edge Cleaning: Eureka J15 Pro Ultra</strong>
+                                </div>
+                                <div style="line-height: 1.5; margin-bottom: 15px;">
+                                    Experience the future of home cleaning with Eureka J15 Pro Ultra. Our TÜV Rheinland certified edge cleaning technology ensures no corner is left untouched...
+                                </div>
+                                <div style="color: #1877f2; font-weight: 600;">
+                                    Shop Now and Save 20% - Limited Time Offer!
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Right Sidebar -->
+        <div class="editor-right-sidebar">
+            <div class="metrics-panel">
+                <h3 class="section-title">Content Metrics</h3>
+                <div class="metric-item">
+                    <span class="metric-label">AI Optimization Score</span>
+                    <span class="metric-value">92%</span>
+                </div>
+                <div class="metric-item">
+                    <span class="metric-label">Readability Score</span>
+                    <span class="metric-value">8.5</span>
+                </div>
+                <div class="metric-item">
+                    <span class="metric-label">SEO Score</span>
+                    <span class="metric-value">87%</span>
+                </div>
+                <div class="metric-item">
+                    <span class="metric-label">Engagement Prediction</span>
+                    <span class="metric-value">High</span>
+                </div>
+            </div>
+
+            <div class="metrics-panel">
+                <h3 class="section-title">Platform Requirements</h3>
+                <div class="metric-item">
+                    <span class="metric-label">Facebook Title</span>
+                    <span class="metric-value">✓ OK</span>
+                </div>
+                <div class="metric-item">
+                    <span class="metric-label">Character Limit</span>
+                    <span class="metric-value">✓ OK</span>
+                </div>
+                <div class="metric-item">
+                    <span class="metric-label">Hashtags</span>
+                    <span class="metric-value">4/5</span>
+                </div>
+                <div class="metric-item">
+                    <span class="metric-label">Media Required</span>
+                    <span class="metric-value">⚠️ Add</span>
+                </div>
+            </div>
+
+            <div class="metrics-panel">
+                <h3 class="section-title">Publishing Schedule</h3>
+                <div style="background: rgba(255, 255, 255, 0.05); border-radius: 8px; padding: 15px; text-align: center;">
+                    <div style="font-size: 14px; color: #9ca3af; margin-bottom: 10px;">Best time to publish</div>
+                    <div style="font-size: 24px; font-weight: 600; color: #00CED1;">2:00 PM EST</div>
+                    <div style="font-size: 12px; color: #9ca3af; margin-top: 5px;">Tuesday, July 16</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Language switching
+        function switchLanguage(lang) {
+            document.querySelectorAll('.lang-tab').forEach(tab => tab.classList.remove('active'));
+            event.target.classList.add('active');
+            
+            // Update content based on language
+            const translations = {
+                en: {
+                    title: "Revolutionary Edge Cleaning: Eureka J15 Pro Ultra",
+                    content: "Experience the future of home cleaning..."
+                },
+                de: {
+                    title: "Revolutionäre Eckenreinigung: Eureka J15 Pro Ultra",
+                    content: "Erleben Sie die Zukunft der Hausreinigung..."
+                },
+                fr: {
+                    title: "Nettoyage Révolutionnaire des Coins: Eureka J15 Pro Ultra",
+                    content: "Découvrez l'avenir du nettoyage domestique..."
+                },
+                jp: {
+                    title: "革命的な角掃除：Eureka J15 Pro Ultra",
+                    content: "家庭清掃の未来を体験してください..."
+                }
+            };
+            
+            // Simulate language change
+            console.log('Switching to:', lang);
+        }
+
+        // Platform selection
+        function togglePlatform(element, platform) {
+            element.classList.toggle('selected');
+            updatePlatformRequirements();
+        }
+
+        // Template selection
+        function selectTemplate(template) {
+            document.querySelectorAll('.template-card').forEach(card => card.classList.remove('active'));
+            event.target.closest('.template-card').classList.add('active');
+            
+            // Load template content
+            console.log('Loading template:', template);
+        }
+
+        // Character counting
+        function updateCharCount(field) {
+            const limits = {
+                title: { facebook: 60, instagram: 50, youtube: 100 },
+                content: { facebook: 500, instagram: 2200, youtube: 5000 }
+            };
+            
+            const element = field === 'title' ? document.getElementById('contentTitle') : document.getElementById('mainContent');
+            const counter = field === 'title' ? document.getElementById('titleCounter') : document.getElementById('contentCounter');
+            const length = element.value.length;
+            const limit = limits[field].facebook; // Default to Facebook
+            
+            counter.textContent = `${length}/${limit} characters`;
+            
+            if (length > limit) {
+                counter.classList.add('error');
+                counter.classList.remove('warning');
+            } else if (length > limit * 0.9) {
+                counter.classList.add('warning');
+                counter.classList.remove('error');
+            } else {
+                counter.classList.remove('warning', 'error');
+            }
+        }
+
+        // Apply AI suggestions
+        function applySuggestion(type) {
+            const mainContent = document.getElementById('mainContent');
+            const suggestions = {
+                tuv: "\n\n✅ TÜV Rheinland Certified: German engineering quality you can trust!",
+                edge: "\n\n🎯 95% edge cleaning efficiency - no corner left behind!",
+                pet: "\n\n🐾 Powerful pet hair removal with anti-tangle technology!"
+            };
+            
+            mainContent.value += suggestions[type];
+            updateCharCount('content');
+        }
+
+        // Preview switching
+        function switchPreview(platform) {
+            document.querySelectorAll('.preview-tab').forEach(tab => tab.classList.remove('active'));
+            event.target.classList.add('active');
+            
+            // Update preview based on platform
+            console.log('Switching preview to:', platform);
+        }
+
+        // Save and publish functions
+        function saveAsDraft() {
+            console.log('Saving as draft...');
+            alert('Content saved as draft!');
+        }
+
+        function publishContent() {
+            console.log('Publishing content...');
+            alert('Content scheduled for publishing!');
+        }
+
+        // Update platform requirements
+        function updatePlatformRequirements() {
+            // Update metrics based on selected platforms
+            console.log('Updating platform requirements...');
+        }
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', () => {
+            updateCharCount('title');
+            updateCharCount('content');
+        });
+    </script>
+</body>
+</html>

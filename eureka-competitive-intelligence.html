@@ -1,0 +1,914 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Eureka GEO Competitive Intelligence System</title>
+    <script src="https://cdn.jsdelivr.net/npm/echarts@5.4.3/dist/echarts.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: #0a0f1c;
+            color: #e0e0e0;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            overflow-x: hidden;
+        }
+
+        .dashboard-header {
+            background: linear-gradient(135deg, #1e3c72 0%, #2a4e80 100%);
+            padding: 20px 30px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+        }
+
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            max-width: 1600px;
+            margin: 0 auto;
+        }
+
+        .header-title {
+            font-size: 28px;
+            font-weight: 600;
+            color: #ffffff;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .status-indicator {
+            width: 12px;
+            height: 12px;
+            background: #4ade80;
+            border-radius: 50%;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0% { box-shadow: 0 0 0 0 rgba(74, 222, 128, 0.4); }
+            70% { box-shadow: 0 0 0 10px rgba(74, 222, 128, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(74, 222, 128, 0); }
+        }
+
+        .header-controls {
+            display: flex;
+            gap: 15px;
+        }
+
+        .control-btn {
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            color: #fff;
+            padding: 8px 16px;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-size: 14px;
+        }
+
+        .control-btn:hover {
+            background: rgba(255, 255, 255, 0.2);
+            transform: translateY(-1px);
+        }
+
+        .dashboard-content {
+            padding: 20px;
+            max-width: 1600px;
+            margin: 0 auto;
+        }
+
+        /* Competitive Overview */
+        .competitive-overview {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .metric-card {
+            background: linear-gradient(135deg, #1a2332 0%, #0f1823 100%);
+            border: 1px solid rgba(0, 206, 209, 0.2);
+            border-radius: 12px;
+            padding: 25px;
+            transition: all 0.3s;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .metric-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, #00CED1, #1e90ff);
+            transform: scaleX(0);
+            transition: transform 0.3s;
+        }
+
+        .metric-card:hover::before {
+            transform: scaleX(1);
+        }
+
+        .metric-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(0, 206, 209, 0.2);
+        }
+
+        .metric-label {
+            font-size: 14px;
+            color: #9ca3af;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .metric-value {
+            font-size: 32px;
+            font-weight: 700;
+            color: #00CED1;
+            margin-bottom: 8px;
+        }
+
+        .metric-trend {
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .trend-up {
+            color: #4ade80;
+        }
+
+        .trend-down {
+            color: #f87171;
+        }
+
+        /* Main Competitor Monitoring */
+        .competitors-section {
+            margin-bottom: 30px;
+        }
+
+        .section-title {
+            font-size: 20px;
+            font-weight: 600;
+            margin-bottom: 20px;
+            color: #fff;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .competitors-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 15px;
+        }
+
+        .competitor-card {
+            background: #1a2332;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .competitor-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .competitor-name {
+            font-size: 16px;
+            font-weight: 600;
+            color: #fff;
+        }
+
+        .market-share {
+            font-size: 18px;
+            font-weight: 700;
+            color: #00CED1;
+        }
+
+        .competitor-metrics {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .metric-row {
+            display: flex;
+            justify-content: space-between;
+            font-size: 13px;
+        }
+
+        .metric-row-label {
+            color: #9ca3af;
+        }
+
+        .metric-row-value {
+            color: #e0e0e0;
+            font-weight: 500;
+        }
+
+        /* Chart Container */
+        .charts-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(500px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .chart-container {
+            background: #1a2332;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            padding: 20px;
+        }
+
+        .chart-title {
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 15px;
+            color: #fff;
+        }
+
+        .chart-box {
+            height: 350px;
+        }
+
+        /* Alert System */
+        .alerts-section {
+            margin-bottom: 30px;
+        }
+
+        .alerts-container {
+            background: #1a2332;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            padding: 20px;
+            max-height: 400px;
+            overflow-y: auto;
+        }
+
+        .alert-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 15px;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 10px;
+            transition: all 0.3s;
+        }
+
+        .alert-high {
+            background: rgba(239, 68, 68, 0.1);
+            border: 1px solid rgba(239, 68, 68, 0.3);
+        }
+
+        .alert-medium {
+            background: rgba(251, 191, 36, 0.1);
+            border: 1px solid rgba(251, 191, 36, 0.3);
+        }
+
+        .alert-low {
+            background: rgba(59, 130, 246, 0.1);
+            border: 1px solid rgba(59, 130, 246, 0.3);
+        }
+
+        .alert-icon {
+            font-size: 20px;
+            line-height: 1;
+        }
+
+        .alert-content {
+            flex: 1;
+        }
+
+        .alert-title {
+            font-size: 14px;
+            font-weight: 600;
+            margin-bottom: 5px;
+            color: #fff;
+        }
+
+        .alert-description {
+            font-size: 13px;
+            color: #9ca3af;
+            line-height: 1.5;
+        }
+
+        .alert-time {
+            font-size: 12px;
+            color: #6b7280;
+        }
+
+        /* Technology Trend Analysis */
+        .tech-trends {
+            background: #1a2332;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            padding: 20px;
+        }
+
+        .trend-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-top: 15px;
+        }
+
+        .trend-tag {
+            background: rgba(0, 206, 209, 0.1);
+            border: 1px solid rgba(0, 206, 209, 0.3);
+            color: #00CED1;
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 13px;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .trend-score {
+            background: rgba(0, 206, 209, 0.2);
+            padding: 2px 6px;
+            border-radius: 10px;
+            font-weight: 600;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .header-content {
+                flex-direction: column;
+                gap: 15px;
+            }
+
+            .charts-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .competitive-overview {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* Scrollbar Styles */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: #0f1823;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: rgba(0, 206, 209, 0.3);
+            border-radius: 4px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: rgba(0, 206, 209, 0.5);
+        }
+    </style>
+</head>
+<body>
+    <div class="dashboard-header">
+        <div class="header-content">
+            <div class="header-title">
+                <span class="status-indicator"></span>
+                Eureka GEO Competitive Intelligence System
+            </div>
+            <div class="header-controls">
+                <button class="control-btn" onclick="refreshData()">🔄 Refresh Data</button>
+                <button class="control-btn" onclick="exportReport()">📊 Export Report</button>
+                <button class="control-btn" onclick="showSettings()">⚙️ System Settings</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="dashboard-content">
+        <!-- Competitive Overview -->
+        <div class="competitive-overview">
+            <div class="metric-card">
+                <div class="metric-label">
+                    <span>🏆</span> AI Citation Rate Comparison
+                </div>
+                <div class="metric-value">1.24x</div>
+                <div class="metric-trend trend-up">
+                    <span>↑</span> 8.5% vs Last Week
+                </div>
+            </div>
+
+            <div class="metric-card">
+                <div class="metric-label">
+                    <span>📍</span> Market Share Ranking
+                </div>
+                <div class="metric-value">#4</div>
+                <div class="metric-trend trend-up">
+                    <span>↑</span> Up 1 Position
+                </div>
+            </div>
+
+            <div class="metric-card">
+                <div class="metric-label">
+                    <span>🎯</span> Tech Feature Mention Rate
+                </div>
+                <div class="metric-value">23.4%</div>
+                <div class="metric-trend trend-up">
+                    <span>↑</span> 3.2% Growth
+                </div>
+            </div>
+
+            <div class="metric-card">
+                <div class="metric-label">
+                    <span>⭐</span> AI Recommendation Ranking
+                </div>
+                <div class="metric-value">Top 5</div>
+                <div class="metric-trend">
+                    <span>→</span> Stable
+                </div>
+            </div>
+        </div>
+
+        <!-- Main Competitor Monitoring -->
+        <div class="competitors-section">
+            <h2 class="section-title">
+                <span>🎯</span> Real-time Main Competitor Monitoring
+            </h2>
+            <div class="competitors-grid">
+                <div class="competitor-card">
+                    <div class="competitor-header">
+                        <span class="competitor-name">ECOVACS</span>
+                        <span class="market-share">25.4%</span>
+                    </div>
+                    <div class="competitor-metrics">
+                        <div class="metric-row">
+                            <span class="metric-row-label">AI Mention Frequency</span>
+                            <span class="metric-row-value">1,234 times/day</span>
+                        </div>
+                        <div class="metric-row">
+                            <span class="metric-row-label">Tech Advantages</span>
+                            <span class="metric-row-value">Laser Navigation, AI Obstacle Avoidance</span>
+                        </div>
+                        <div class="metric-row">
+                            <span class="metric-row-label">Price Range</span>
+                            <span class="metric-row-value">$420-840</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="competitor-card">
+                    <div class="competitor-header">
+                        <span class="competitor-name">Roborock</span>
+                        <span class="market-share">19.3%</span>
+                    </div>
+                    <div class="competitor-metrics">
+                        <div class="metric-row">
+                            <span class="metric-row-label">AI Mention Frequency</span>
+                            <span class="metric-row-value">987 times/day</span>
+                        </div>
+                        <div class="metric-row">
+                            <span class="metric-row-label">Tech Advantages</span>
+                            <span class="metric-row-value">Self-cleaning, Smart Path Planning</span>
+                        </div>
+                        <div class="metric-row">
+                            <span class="metric-row-label">Price Range</span>
+                            <span class="metric-row-value">$350-700</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="competitor-card">
+                    <div class="competitor-header">
+                        <span class="competitor-name">Dreame</span>
+                        <span class="market-share">15.8%</span>
+                    </div>
+                    <div class="competitor-metrics">
+                        <div class="metric-row">
+                            <span class="metric-row-label">AI Mention Frequency</span>
+                            <span class="metric-row-value">756 times/day</span>
+                        </div>
+                        <div class="metric-row">
+                            <span class="metric-row-label">Tech Advantages</span>
+                            <span class="metric-row-value">Premium Positioning, All-in-one Base Station</span>
+                        </div>
+                        <div class="metric-row">
+                            <span class="metric-row-label">Price Range</span>
+                            <span class="metric-row-value">$560-980</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="competitor-card">
+                    <div class="competitor-header">
+                        <span class="competitor-name">NARWAL</span>
+                        <span class="market-share">16.3%</span>
+                    </div>
+                    <div class="competitor-metrics">
+                        <div class="metric-row">
+                            <span class="metric-row-label">AI Mention Frequency</span>
+                            <span class="metric-row-value">823 times/day</span>
+                        </div>
+                        <div class="metric-row">
+                            <span class="metric-row-label">Tech Advantages</span>
+                            <span class="metric-row-value">Mopping Expert, Self-cleaning</span>
+                        </div>
+                        <div class="metric-row">
+                            <span class="metric-row-label">Price Range</span>
+                            <span class="metric-row-value">$420-630</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Data Visualization Charts -->
+        <div class="charts-grid">
+            <div class="chart-container">
+                <h3 class="chart-title">AI Search Engine Brand Mention Trends</h3>
+                <div id="brandMentionChart" class="chart-box"></div>
+            </div>
+
+            <div class="chart-container">
+                <h3 class="chart-title">Tech Feature AI Recognition Comparison</h3>
+                <div id="techFeaturesChart" class="chart-box"></div>
+            </div>
+        </div>
+
+        <div class="charts-grid">
+            <div class="chart-container">
+                <h3 class="chart-title">Market Share Change Trends</h3>
+                <div id="marketShareChart" class="chart-box"></div>
+            </div>
+
+            <div class="chart-container">
+                <h3 class="chart-title">User Sentiment Analysis</h3>
+                <div id="sentimentChart" class="chart-box"></div>
+            </div>
+        </div>
+
+        <!-- Alert System -->
+        <div class="alerts-section">
+            <h2 class="section-title">
+                <span>⚠️</span> Competitive Dynamics Alert
+            </h2>
+            <div class="alerts-container">
+                <div class="alert-item alert-high">
+                    <span class="alert-icon">🚨</span>
+                    <div class="alert-content">
+                        <div class="alert-title">ECOVACS Launches New T30 Pro</div>
+                        <div class="alert-description">Detected heavy AI search mentions of ECOVACS new T30 Pro with robotic arm technology, potentially impacting high-end market competition</div>
+                        <div class="alert-time">10 minutes ago</div>
+                    </div>
+                </div>
+
+                <div class="alert-item alert-medium">
+                    <span class="alert-icon">📊</span>
+                    <div class="alert-content">
+                        <div class="alert-title">Roborock AI Recommendation Rate Rising</div>
+                        <div class="alert-description">Roborock G20 rises to #2 in ChatGPT recommendations, edge cleaning feature highly recognized</div>
+                        <div class="alert-time">25 minutes ago</div>
+                    </div>
+                </div>
+
+                <div class="alert-item alert-low">
+                    <span class="alert-icon">💡</span>
+                    <div class="alert-content">
+                        <div class="alert-title">New Tech Trend: 3D Vision</div>
+                        <div class="alert-description">AI search queries for "3D vision robot vacuum" increased by 45%, suggest monitoring tech development direction</div>
+                        <div class="alert-time">1 hour ago</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Technology Trend Analysis -->
+        <div class="tech-trends">
+            <h3 class="chart-title">🔍 Hot Technology Trends</h3>
+            <div class="trend-tags">
+                <div class="trend-tag">
+                    Robotic Arm Technology <span class="trend-score">92</span>
+                </div>
+                <div class="trend-tag">
+                    AI Large Model Integration <span class="trend-score">88</span>
+                </div>
+                <div class="trend-tag">
+                    3D Structured Light <span class="trend-score">85</span>
+                </div>
+                <div class="trend-tag">
+                    Auto Water Supply/Drainage <span class="trend-score">82</span>
+                </div>
+                <div class="trend-tag">
+                    Hot Water Mop Washing <span class="trend-score">79</span>
+                </div>
+                <div class="trend-tag">
+                    Dual Laser Navigation <span class="trend-score">76</span>
+                </div>
+                <div class="trend-tag">
+                    Voice Interaction <span class="trend-score">73</span>
+                </div>
+                <div class="trend-tag">
+                    Pet Recognition <span class="trend-score">71</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Initialize charts
+        function initCharts() {
+            // AI search engine brand mention trends
+            const brandMentionChart = echarts.init(document.getElementById('brandMentionChart'));
+            const brandMentionOption = {
+                tooltip: {
+                    trigger: 'axis',
+                    backgroundColor: 'rgba(0, 0, 0, 0.8)',
+                    borderColor: '#00CED1',
+                    borderWidth: 1,
+                    textStyle: { color: '#fff' }
+                },
+                legend: {
+                    data: ['Eureka', 'ECOVACS', 'Roborock', 'Dreame', 'NARWAL'],
+                    textStyle: { color: '#9ca3af' },
+                    top: 10
+                },
+                grid: {
+                    left: '3%',
+                    right: '4%',
+                    bottom: '3%',
+                    containLabel: true
+                },
+                xAxis: {
+                    type: 'category',
+                    boundaryGap: false,
+                    data: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
+                    axisLine: { lineStyle: { color: '#374151' } },
+                    axisLabel: { color: '#9ca3af' }
+                },
+                yAxis: {
+                    type: 'value',
+                    axisLine: { lineStyle: { color: '#374151' } },
+                    axisLabel: { color: '#9ca3af' },
+                    splitLine: { lineStyle: { color: '#1f2937' } }
+                },
+                series: [
+                    {
+                        name: 'Eureka',
+                        type: 'line',
+                        smooth: true,
+                        data: [620, 682, 691, 734, 790, 830, 820],
+                        lineStyle: { color: '#00CED1', width: 3 },
+                        areaStyle: { color: 'rgba(0, 206, 209, 0.2)' },
+                        emphasis: { focus: 'series' }
+                    },
+                    {
+                        name: 'ECOVACS',
+                        type: 'line',
+                        smooth: true,
+                        data: [1120, 1132, 1201, 1234, 1290, 1330, 1320],
+                        lineStyle: { color: '#f59e0b' }
+                    },
+                    {
+                        name: 'Roborock',
+                        type: 'line',
+                        smooth: true,
+                        data: [920, 932, 901, 934, 990, 1030, 1020],
+                        lineStyle: { color: '#ef4444' }
+                    },
+                    {
+                        name: 'Dreame',
+                        type: 'line',
+                        smooth: true,
+                        data: [720, 732, 701, 734, 756, 730, 720],
+                        lineStyle: { color: '#8b5cf6' }
+                    },
+                    {
+                        name: 'NARWAL',
+                        type: 'line',
+                        smooth: true,
+                        data: [820, 832, 801, 834, 823, 830, 820],
+                        lineStyle: { color: '#10b981' }
+                    }
+                ]
+            };
+            brandMentionChart.setOption(brandMentionOption);
+
+            // Tech feature AI recognition comparison
+            const techFeaturesChart = echarts.init(document.getElementById('techFeaturesChart'));
+            const techFeaturesOption = {
+                tooltip: {
+                    trigger: 'axis',
+                    axisPointer: { type: 'shadow' },
+                    backgroundColor: 'rgba(0, 0, 0, 0.8)',
+                    borderColor: '#00CED1',
+                    borderWidth: 1,
+                    textStyle: { color: '#fff' }
+                },
+                legend: {
+                    data: ['Eureka', 'Industry Average'],
+                    textStyle: { color: '#9ca3af' },
+                    top: 10
+                },
+                grid: {
+                    left: '3%',
+                    right: '4%',
+                    bottom: '3%',
+                    containLabel: true
+                },
+                xAxis: {
+                    type: 'value',
+                    axisLine: { lineStyle: { color: '#374151' } },
+                    axisLabel: { color: '#9ca3af' },
+                    splitLine: { lineStyle: { color: '#1f2937' } }
+                },
+                yAxis: {
+                    type: 'category',
+                    data: ['Edge Cleaning', 'Auto Dust Collection', 'Mop Washing', 'AI Obstacle Avoidance', 'Laser Navigation', 'Smart Path Planning'],
+                    axisLine: { lineStyle: { color: '#374151' } },
+                    axisLabel: { color: '#9ca3af' }
+                },
+                series: [
+                    {
+                        name: 'Eureka',
+                        type: 'bar',
+                        data: [94, 89, 86, 82, 88, 85],
+                        itemStyle: { color: '#00CED1' }
+                    },
+                    {
+                        name: 'Industry Average',
+                        type: 'bar',
+                        data: [78, 85, 82, 88, 90, 87],
+                        itemStyle: { color: '#6b7280' }
+                    }
+                ]
+            };
+            techFeaturesChart.setOption(techFeaturesOption);
+
+            // Market share change trends
+            const marketShareChart = echarts.init(document.getElementById('marketShareChart'));
+            const marketShareOption = {
+                tooltip: {
+                    trigger: 'item',
+                    backgroundColor: 'rgba(0, 0, 0, 0.8)',
+                    borderColor: '#00CED1',
+                    borderWidth: 1,
+                    textStyle: { color: '#fff' }
+                },
+                legend: {
+                    orient: 'vertical',
+                    left: 'left',
+                    textStyle: { color: '#9ca3af' }
+                },
+                series: [
+                    {
+                        name: 'Market Share',
+                        type: 'pie',
+                        radius: ['40%', '70%'],
+                        avoidLabelOverlap: false,
+                        itemStyle: {
+                            borderRadius: 10,
+                            borderColor: '#0a0f1c',
+                            borderWidth: 2
+                        },
+                        label: {
+                            show: false,
+                            position: 'center'
+                        },
+                        emphasis: {
+                            label: {
+                                show: true,
+                                fontSize: 20,
+                                fontWeight: 'bold',
+                                color: '#fff'
+                            }
+                        },
+                        labelLine: {
+                            show: false
+                        },
+                        data: [
+                            { value: 25.4, name: 'ECOVACS', itemStyle: { color: '#f59e0b' } },
+                            { value: 19.3, name: 'Roborock', itemStyle: { color: '#ef4444' } },
+                            { value: 16.3, name: 'NARWAL', itemStyle: { color: '#10b981' } },
+                            { value: 15.8, name: 'Dreame', itemStyle: { color: '#8b5cf6' } },
+                            { value: 12.5, name: 'Eureka', itemStyle: { color: '#00CED1' } },
+                            { value: 10.7, name: 'Others', itemStyle: { color: '#6b7280' } }
+                        ]
+                    }
+                ]
+            };
+            marketShareChart.setOption(marketShareOption);
+
+            // User sentiment analysis
+            const sentimentChart = echarts.init(document.getElementById('sentimentChart'));
+            const sentimentOption = {
+                tooltip: {
+                    trigger: 'axis',
+                    axisPointer: { type: 'cross' },
+                    backgroundColor: 'rgba(0, 0, 0, 0.8)',
+                    borderColor: '#00CED1',
+                    borderWidth: 1,
+                    textStyle: { color: '#fff' }
+                },
+                radar: {
+                    indicator: [
+                        { name: 'Product Quality', max: 100 },
+                        { name: 'Cleaning Effect', max: 100 },
+                        { name: 'Intelligence Level', max: 100 },
+                        { name: 'Value for Money', max: 100 },
+                        { name: 'After-sales Service', max: 100 },
+                        { name: 'Brand Recognition', max: 100 }
+                    ],
+                    axisName: { color: '#9ca3af' },
+                    splitLine: { lineStyle: { color: '#1f2937' } },
+                    splitArea: { areaStyle: { color: 'rgba(255, 255, 255, 0.02)' } }
+                },
+                series: [{
+                    name: 'User Sentiment Score',
+                    type: 'radar',
+                    data: [
+                        {
+                            value: [88, 92, 85, 79, 82, 76],
+                            name: 'Eureka',
+                            lineStyle: { color: '#00CED1', width: 2 },
+                            areaStyle: { color: 'rgba(0, 206, 209, 0.3)' }
+                        },
+                        {
+                            value: [90, 88, 92, 72, 85, 88],
+                            name: 'Industry Average',
+                            lineStyle: { color: '#6b7280', width: 2 },
+                            areaStyle: { color: 'rgba(107, 114, 128, 0.2)' }
+                        }
+                    ]
+                }]
+            };
+            sentimentChart.setOption(sentimentOption);
+
+            // Responsive handling
+            window.addEventListener('resize', () => {
+                brandMentionChart.resize();
+                techFeaturesChart.resize();
+                marketShareChart.resize();
+                sentimentChart.resize();
+            });
+        }
+
+        // Refresh data
+        function refreshData() {
+            console.log('Refreshing data...');
+            // Simulate data refresh
+            setTimeout(() => {
+                initCharts();
+                console.log('Data updated');
+            }, 1000);
+        }
+
+        // Export report
+        function exportReport() {
+            console.log('Generating competitive intelligence report...');
+            alert('Competitive intelligence report is being generated, estimated 30 seconds...');
+        }
+
+        // Show settings
+        function showSettings() {
+            console.log('Opening system settings');
+            alert('System settings feature under development...');
+        }
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', () => {
+            initCharts();
+            
+            // Simulate real-time data updates
+            setInterval(() => {
+                // Update metric values
+                const metrics = document.querySelectorAll('.metric-value');
+                metrics.forEach(metric => {
+                    if (metric.textContent.includes('x')) {
+                        const currentValue = parseFloat(metric.textContent);
+                        const newValue = (currentValue + (Math.random() - 0.5) * 0.1).toFixed(2);
+                        metric.textContent = newValue + 'x';
+                    } else if (metric.textContent.includes('%')) {
+                        const currentValue = parseFloat(metric.textContent);
+                        const newValue = (currentValue + (Math.random() - 0.5) * 2).toFixed(1);
+                        metric.textContent = newValue + '%';
+                    }
+                });
+            }, 5000);
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,820 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Eureka Content Calendar - Strategic Planning</title>
+    <script src="https://cdn.jsdelivr.net/npm/echarts@5.4.3/dist/echarts.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: #0a0f1c;
+            color: #e0e0e0;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            overflow-x: hidden;
+        }
+
+        .dashboard-content {
+            padding: 20px;
+            max-width: 1600px;
+            margin: 0 auto;
+        }
+
+        /* Header Section */
+        .calendar-header {
+            background: linear-gradient(135deg, #1e3c72 0%, #2a4e80 100%);
+            padding: 30px;
+            border-radius: 12px;
+            margin-bottom: 30px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+        }
+
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .header-title {
+            font-size: 32px;
+            font-weight: 700;
+            color: #ffffff;
+        }
+
+        .header-controls {
+            display: flex;
+            gap: 15px;
+        }
+
+        .control-btn {
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            color: #fff;
+            padding: 10px 20px;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-size: 14px;
+        }
+
+        .control-btn:hover {
+            background: rgba(255, 255, 255, 0.2);
+            transform: translateY(-2px);
+        }
+
+        /* Calendar View */
+        .calendar-container {
+            background: #1a2332;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            padding: 25px;
+            margin-bottom: 30px;
+        }
+
+        .calendar-nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .month-selector {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .nav-btn {
+            background: rgba(0, 206, 209, 0.1);
+            border: 1px solid rgba(0, 206, 209, 0.3);
+            color: #00CED1;
+            padding: 8px 15px;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .nav-btn:hover {
+            background: rgba(0, 206, 209, 0.2);
+        }
+
+        .current-month {
+            font-size: 20px;
+            font-weight: 600;
+            color: #fff;
+        }
+
+        .view-selector {
+            display: flex;
+            gap: 10px;
+        }
+
+        .view-btn {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            color: #9ca3af;
+            padding: 8px 16px;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .view-btn.active {
+            background: rgba(0, 206, 209, 0.1);
+            border-color: rgba(0, 206, 209, 0.3);
+            color: #00CED1;
+        }
+
+        /* Calendar Grid */
+        .calendar-grid {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 10px;
+        }
+
+        .day-header {
+            text-align: center;
+            padding: 15px 0;
+            font-weight: 600;
+            color: #00CED1;
+            font-size: 14px;
+        }
+
+        .calendar-day {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+            padding: 10px;
+            min-height: 120px;
+            transition: all 0.3s;
+            cursor: pointer;
+            position: relative;
+        }
+
+        .calendar-day:hover {
+            background: rgba(0, 206, 209, 0.1);
+            border-color: rgba(0, 206, 209, 0.3);
+        }
+
+        .day-number {
+            font-size: 14px;
+            font-weight: 600;
+            color: #fff;
+            margin-bottom: 5px;
+        }
+
+        .day-content {
+            font-size: 11px;
+        }
+
+        .content-item {
+            background: rgba(0, 206, 209, 0.1);
+            border-left: 3px solid #00CED1;
+            padding: 3px 6px;
+            margin-bottom: 3px;
+            border-radius: 3px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .content-type-article {
+            border-left-color: #00CED1;
+        }
+
+        .content-type-video {
+            border-left-color: #f59e0b;
+        }
+
+        .content-type-social {
+            border-left-color: #10b981;
+        }
+
+        .content-count {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: rgba(0, 206, 209, 0.2);
+            color: #00CED1;
+            padding: 2px 6px;
+            border-radius: 10px;
+            font-size: 10px;
+            font-weight: 600;
+        }
+
+        /* Content Planning Section */
+        .planning-section {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .planning-card {
+            background: #1a2332;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            padding: 20px;
+        }
+
+        .section-title {
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 20px;
+            color: #fff;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        /* Upcoming Content List */
+        .content-list {
+            max-height: 300px;
+            overflow-y: auto;
+        }
+
+        .content-list-item {
+            display: flex;
+            align-items: center;
+            padding: 12px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 8px;
+            margin-bottom: 10px;
+            transition: all 0.3s;
+        }
+
+        .content-list-item:hover {
+            background: rgba(0, 206, 209, 0.1);
+            transform: translateX(5px);
+        }
+
+        .content-date {
+            background: rgba(0, 206, 209, 0.1);
+            color: #00CED1;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: 600;
+            margin-right: 15px;
+            min-width: 60px;
+            text-align: center;
+        }
+
+        .content-details {
+            flex: 1;
+        }
+
+        .content-title {
+            font-size: 14px;
+            font-weight: 600;
+            color: #fff;
+            margin-bottom: 4px;
+        }
+
+        .content-meta {
+            font-size: 12px;
+            color: #9ca3af;
+        }
+
+        .content-status {
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 11px;
+            font-weight: 600;
+        }
+
+        .status-draft {
+            background: rgba(251, 191, 36, 0.1);
+            color: #fbbf24;
+        }
+
+        .status-ready {
+            background: rgba(74, 222, 128, 0.1);
+            color: #4ade80;
+        }
+
+        .status-scheduled {
+            background: rgba(59, 130, 246, 0.1);
+            color: #3b82f6;
+        }
+
+        /* Content Categories */
+        .categories-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+        }
+
+        .category-card {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+            padding: 15px;
+            text-align: center;
+            transition: all 0.3s;
+        }
+
+        .category-card:hover {
+            background: rgba(0, 206, 209, 0.1);
+            border-color: rgba(0, 206, 209, 0.3);
+            transform: translateY(-3px);
+        }
+
+        .category-icon {
+            font-size: 24px;
+            margin-bottom: 10px;
+        }
+
+        .category-name {
+            font-size: 14px;
+            font-weight: 600;
+            color: #fff;
+            margin-bottom: 5px;
+        }
+
+        .category-count {
+            font-size: 20px;
+            font-weight: 700;
+            color: #00CED1;
+        }
+
+        /* Performance Overview */
+        .performance-overview {
+            background: #1a2332;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 30px;
+        }
+
+        .chart-container {
+            height: 300px;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .header-content {
+                flex-direction: column;
+                gap: 20px;
+            }
+
+            .planning-section {
+                grid-template-columns: 1fr;
+            }
+
+            .calendar-grid {
+                grid-template-columns: repeat(7, 1fr);
+                font-size: 12px;
+            }
+
+            .calendar-day {
+                min-height: 80px;
+            }
+        }
+
+        /* Scrollbar Styling */
+        .content-list::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .content-list::-webkit-scrollbar-track {
+            background: #0f1823;
+        }
+
+        .content-list::-webkit-scrollbar-thumb {
+            background: rgba(0, 206, 209, 0.3);
+            border-radius: 3px;
+        }
+
+        .content-list::-webkit-scrollbar-thumb:hover {
+            background: rgba(0, 206, 209, 0.5);
+        }
+    </style>
+</head>
+<body>
+    <div class="dashboard-content">
+        <!-- Header Section -->
+        <div class="calendar-header">
+            <div class="header-content">
+                <h1 class="header-title">Content Calendar & Planning</h1>
+                <div class="header-controls">
+                    <button class="control-btn" onclick="addNewContent()">➕ Add Content</button>
+                    <button class="control-btn" onclick="exportCalendar()">📥 Export</button>
+                    <button class="control-btn" onclick="showFilters()">🔍 Filter</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Calendar View -->
+        <div class="calendar-container">
+            <div class="calendar-nav">
+                <div class="month-selector">
+                    <button class="nav-btn" onclick="previousMonth()">←</button>
+                    <h2 class="current-month">July 2025</h2>
+                    <button class="nav-btn" onclick="nextMonth()">→</button>
+                </div>
+                <div class="view-selector">
+                    <button class="view-btn active" onclick="setView('month')">Month</button>
+                    <button class="view-btn" onclick="setView('week')">Week</button>
+                    <button class="view-btn" onclick="setView('list')">List</button>
+                </div>
+            </div>
+
+            <div class="calendar-grid">
+                <!-- Days of week headers -->
+                <div class="day-header">Sun</div>
+                <div class="day-header">Mon</div>
+                <div class="day-header">Tue</div>
+                <div class="day-header">Wed</div>
+                <div class="day-header">Thu</div>
+                <div class="day-header">Fri</div>
+                <div class="day-header">Sat</div>
+
+                <!-- Calendar days will be generated by JavaScript -->
+            </div>
+        </div>
+
+        <!-- Content Planning Section -->
+        <div class="planning-section">
+            <div class="planning-card">
+                <h3 class="section-title">
+                    <span>📅</span> Upcoming Content
+                </h3>
+                <div class="content-list">
+                    <div class="content-list-item">
+                        <div class="content-date">Jul 15</div>
+                        <div class="content-details">
+                            <div class="content-title">Corner Cleaning Technology Deep Dive</div>
+                            <div class="content-meta">Article • Tech Category • 2,500 words</div>
+                        </div>
+                        <span class="content-status status-ready">Ready</span>
+                    </div>
+                    <div class="content-list-item">
+                        <div class="content-date">Jul 16</div>
+                        <div class="content-details">
+                            <div class="content-title">J15 Pro Ultra vs Competitors</div>
+                            <div class="content-meta">Comparison • Video • 8 min</div>
+                        </div>
+                        <span class="content-status status-scheduled">Scheduled</span>
+                    </div>
+                    <div class="content-list-item">
+                        <div class="content-date">Jul 18</div>
+                        <div class="content-details">
+                            <div class="content-title">Pet Hair Cleaning Guide</div>
+                            <div class="content-meta">How-to • Article • 1,800 words</div>
+                        </div>
+                        <span class="content-status status-draft">Draft</span>
+                    </div>
+                    <div class="content-list-item">
+                        <div class="content-date">Jul 20</div>
+                        <div class="content-details">
+                            <div class="content-title">8-in-1 Station Features</div>
+                            <div class="content-meta">Product • Infographic</div>
+                        </div>
+                        <span class="content-status status-ready">Ready</span>
+                    </div>
+                    <div class="content-list-item">
+                        <div class="content-date">Jul 22</div>
+                        <div class="content-details">
+                            <div class="content-title">Customer Success Stories</div>
+                            <div class="content-meta">Social • Video Series</div>
+                        </div>
+                        <span class="content-status status-draft">Draft</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="planning-card">
+                <h3 class="section-title">
+                    <span>📊</span> Content Categories
+                </h3>
+                <div class="categories-grid">
+                    <div class="category-card">
+                        <div class="category-icon">📝</div>
+                        <div class="category-name">Articles</div>
+                        <div class="category-count">47</div>
+                    </div>
+                    <div class="category-card">
+                        <div class="category-icon">🎥</div>
+                        <div class="category-name">Videos</div>
+                        <div class="category-count">23</div>
+                    </div>
+                    <div class="category-card">
+                        <div class="category-icon">📱</div>
+                        <div class="category-name">Social Posts</div>
+                        <div class="category-count">156</div>
+                    </div>
+                    <div class="category-card">
+                        <div class="category-icon">📊</div>
+                        <div class="category-name">Infographics</div>
+                        <div class="category-count">18</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Performance Overview -->
+        <div class="performance-overview">
+            <h3 class="section-title">
+                <span>📈</span> Content Performance Overview
+            </h3>
+            <div id="performanceChart" class="chart-container"></div>
+        </div>
+
+        <!-- Content Distribution -->
+        <div class="planning-section">
+            <div class="planning-card">
+                <h3 class="section-title">
+                    <span>🎯</span> Content Type Distribution
+                </h3>
+                <div id="distributionChart" class="chart-container"></div>
+            </div>
+
+            <div class="planning-card">
+                <h3 class="section-title">
+                    <span>📊</span> Publishing Frequency
+                </h3>
+                <div id="frequencyChart" class="chart-container"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Generate calendar days
+        function generateCalendar() {
+            const calendarGrid = document.querySelector('.calendar-grid');
+            
+            // Clear existing days (keep headers)
+            const headers = calendarGrid.querySelectorAll('.day-header');
+            calendarGrid.innerHTML = '';
+            headers.forEach(header => calendarGrid.appendChild(header));
+
+            // Add empty cells for days before month starts
+            for (let i = 0; i < 2; i++) {
+                const emptyDay = document.createElement('div');
+                emptyDay.className = 'calendar-day';
+                emptyDay.style.opacity = '0.3';
+                calendarGrid.appendChild(emptyDay);
+            }
+
+            // Add days of the month
+            for (let day = 1; day <= 31; day++) {
+                const dayElement = document.createElement('div');
+                dayElement.className = 'calendar-day';
+                dayElement.innerHTML = `
+                    <div class="day-number">${day}</div>
+                    <div class="day-content">
+                        ${getContentForDay(day)}
+                    </div>
+                    ${getContentCount(day)}
+                `;
+                dayElement.onclick = () => showDayDetails(day);
+                calendarGrid.appendChild(dayElement);
+            }
+        }
+
+        function getContentForDay(day) {
+            const content = {
+                5: '<div class="content-item content-type-article">Corner Cleaning Guide</div>',
+                8: '<div class="content-item content-type-video">Product Demo</div><div class="content-item content-type-social">Social Campaign</div>',
+                12: '<div class="content-item content-type-article">Tech Analysis</div>',
+                15: '<div class="content-item content-type-article">Deep Dive Article</div>',
+                16: '<div class="content-item content-type-video">Comparison Video</div>',
+                18: '<div class="content-item content-type-article">Pet Hair Guide</div>',
+                20: '<div class="content-item content-type-social">Infographic</div>',
+                22: '<div class="content-item content-type-video">Success Stories</div>',
+                25: '<div class="content-item content-type-article">FAQ Update</div>',
+                28: '<div class="content-item content-type-video">Tutorial Series</div>',
+                30: '<div class="content-item content-type-social">Monthly Roundup</div>'
+            };
+            
+            return content[day] || '';
+        }
+
+        function getContentCount(day) {
+            const counts = {8: 2};
+            if (counts[day]) {
+                return `<span class="content-count">${counts[day]}+</span>`;
+            }
+            return '';
+        }
+
+        // Performance Chart
+        function initPerformanceChart() {
+            const chart = echarts.init(document.getElementById('performanceChart'));
+            const option = {
+                tooltip: {
+                    trigger: 'axis',
+                    backgroundColor: 'rgba(0, 0, 0, 0.8)',
+                    borderColor: '#00CED1',
+                    borderWidth: 1,
+                    textStyle: { color: '#fff' }
+                },
+                legend: {
+                    data: ['Published', 'Engagement Rate', 'AI Citations'],
+                    textStyle: { color: '#9ca3af' },
+                    top: 10
+                },
+                grid: {
+                    left: '3%',
+                    right: '4%',
+                    bottom: '3%',
+                    containLabel: true
+                },
+                xAxis: {
+                    type: 'category',
+                    data: ['Week 1', 'Week 2', 'Week 3', 'Week 4'],
+                    axisLine: { lineStyle: { color: '#374151' } },
+                    axisLabel: { color: '#9ca3af' }
+                },
+                yAxis: [
+                    {
+                        type: 'value',
+                        name: 'Content Count',
+                        position: 'left',
+                        axisLine: { lineStyle: { color: '#374151' } },
+                        axisLabel: { color: '#9ca3af' },
+                        splitLine: { lineStyle: { color: '#1f2937' } }
+                    },
+                    {
+                        type: 'value',
+                        name: 'Engagement %',
+                        position: 'right',
+                        axisLine: { lineStyle: { color: '#374151' } },
+                        axisLabel: { color: '#9ca3af' }
+                    }
+                ],
+                series: [
+                    {
+                        name: 'Published',
+                        type: 'bar',
+                        data: [12, 15, 18, 14],
+                        itemStyle: { color: '#00CED1' }
+                    },
+                    {
+                        name: 'Engagement Rate',
+                        type: 'line',
+                        yAxisIndex: 1,
+                        data: [75, 82, 88, 85],
+                        lineStyle: { color: '#f59e0b', width: 3 },
+                        symbol: 'circle',
+                        symbolSize: 8
+                    },
+                    {
+                        name: 'AI Citations',
+                        type: 'line',
+                        yAxisIndex: 1,
+                        data: [68, 74, 81, 79],
+                        lineStyle: { color: '#10b981', width: 3 },
+                        symbol: 'circle',
+                        symbolSize: 8
+                    }
+                ]
+            };
+            chart.setOption(option);
+            return chart;
+        }
+
+        // Distribution Chart
+        function initDistributionChart() {
+            const chart = echarts.init(document.getElementById('distributionChart'));
+            const option = {
+                tooltip: {
+                    trigger: 'item',
+                    backgroundColor: 'rgba(0, 0, 0, 0.8)',
+                    borderColor: '#00CED1',
+                    borderWidth: 1,
+                    textStyle: { color: '#fff' }
+                },
+                series: [
+                    {
+                        type: 'pie',
+                        radius: '70%',
+                        data: [
+                            { value: 45, name: 'How-to Guides', itemStyle: { color: '#00CED1' } },
+                            { value: 25, name: 'Product Features', itemStyle: { color: '#f59e0b' } },
+                            { value: 20, name: 'Comparisons', itemStyle: { color: '#10b981' } },
+                            { value: 10, name: 'User Stories', itemStyle: { color: '#8b5cf6' } }
+                        ],
+                        emphasis: {
+                            itemStyle: {
+                                shadowBlur: 10,
+                                shadowOffsetX: 0,
+                                shadowColor: 'rgba(0, 0, 0, 0.5)'
+                            }
+                        },
+                        label: {
+                            formatter: '{b}\n{d}%',
+                            color: '#9ca3af'
+                        }
+                    }
+                ]
+            };
+            chart.setOption(option);
+            return chart;
+        }
+
+        // Frequency Chart
+        function initFrequencyChart() {
+            const chart = echarts.init(document.getElementById('frequencyChart'));
+            const option = {
+                tooltip: {
+                    trigger: 'axis',
+                    backgroundColor: 'rgba(0, 0, 0, 0.8)',
+                    borderColor: '#00CED1',
+                    borderWidth: 1,
+                    textStyle: { color: '#fff' }
+                },
+                grid: {
+                    left: '3%',
+                    right: '4%',
+                    bottom: '3%',
+                    containLabel: true
+                },
+                xAxis: {
+                    type: 'category',
+                    data: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
+                    axisLine: { lineStyle: { color: '#374151' } },
+                    axisLabel: { color: '#9ca3af' }
+                },
+                yAxis: {
+                    type: 'value',
+                    name: 'Posts',
+                    axisLine: { lineStyle: { color: '#374151' } },
+                    axisLabel: { color: '#9ca3af' },
+                    splitLine: { lineStyle: { color: '#1f2937' } }
+                },
+                series: [
+                    {
+                        type: 'bar',
+                        data: [3, 5, 4, 6, 5, 2, 1],
+                        itemStyle: {
+                            color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
+                                { offset: 0, color: '#00CED1' },
+                                { offset: 1, color: '#1e90ff' }
+                            ])
+                        }
+                    }
+                ]
+            };
+            chart.setOption(option);
+            return chart;
+        }
+
+        // Action functions
+        function previousMonth() {
+            console.log('Previous month');
+        }
+
+        function nextMonth() {
+            console.log('Next month');
+        }
+
+        function setView(view) {
+            document.querySelectorAll('.view-btn').forEach(btn => btn.classList.remove('active'));
+            event.target.classList.add('active');
+            console.log('View changed to:', view);
+        }
+
+        function addNewContent() {
+            console.log('Add new content');
+            alert('Content creation form coming soon!');
+        }
+
+        function exportCalendar() {
+            console.log('Export calendar');
+            alert('Exporting calendar data...');
+        }
+
+        function showFilters() {
+            console.log('Show filters');
+            alert('Filter options coming soon!');
+        }
+
+        function showDayDetails(day) {
+            console.log('Show details for day:', day);
+        }
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', () => {
+            generateCalendar();
+            
+            const performanceChart = initPerformanceChart();
+            const distributionChart = initDistributionChart();
+            const frequencyChart = initFrequencyChart();
+
+            // Responsive resize
+            window.addEventListener('resize', () => {
+                performanceChart.resize();
+                distributionChart.resize();
+                frequencyChart.resize();
+            });
+        });
+    </script>
+</body>
+</html>

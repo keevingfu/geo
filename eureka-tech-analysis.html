@@ -1,0 +1,792 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Eureka Technology Comparison Analysis - GEO Competitive Intelligence System</title>
+    <script src="https://cdn.jsdelivr.net/npm/echarts@5.4.3/dist/echarts.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: #0a0f1c;
+            color: #e0e0e0;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            overflow-x: hidden;
+        }
+
+        .dashboard-content {
+            padding: 20px;
+            max-width: 1600px;
+            margin: 0 auto;
+        }
+
+        .page-header {
+            background: linear-gradient(135deg, #1e3c72 0%, #2a4e80 100%);
+            padding: 30px;
+            border-radius: 12px;
+            margin-bottom: 30px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+        }
+
+        .page-title {
+            font-size: 32px;
+            font-weight: 700;
+            color: #ffffff;
+            margin-bottom: 10px;
+        }
+
+        .page-subtitle {
+            font-size: 16px;
+            color: rgba(255, 255, 255, 0.8);
+        }
+
+        /* Technology Comparison Overview */
+        .tech-overview {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .tech-card {
+            background: linear-gradient(135deg, #1a2332 0%, #0f1823 100%);
+            border: 1px solid rgba(0, 206, 209, 0.2);
+            border-radius: 12px;
+            padding: 25px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .tech-card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .tech-name {
+            font-size: 18px;
+            font-weight: 600;
+            color: #00CED1;
+        }
+
+        .tech-status {
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .status-leading {
+            background: rgba(74, 222, 128, 0.2);
+            color: #4ade80;
+        }
+
+        .status-competitive {
+            background: rgba(251, 191, 36, 0.2);
+            color: #fbbf24;
+        }
+
+        .status-lagging {
+            background: rgba(239, 68, 68, 0.2);
+            color: #ef4444;
+        }
+
+        .tech-metrics {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .metric-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .metric-name {
+            font-size: 14px;
+            color: #9ca3af;
+        }
+
+        .metric-bar {
+            flex: 1;
+            height: 6px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 3px;
+            margin: 0 15px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .metric-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #00CED1, #1e90ff);
+            border-radius: 3px;
+            transition: width 0.6s ease;
+        }
+
+        .metric-value {
+            font-size: 14px;
+            font-weight: 600;
+            color: #fff;
+            min-width: 40px;
+            text-align: right;
+        }
+
+        /* Detailed Technology Comparison Table */
+        .comparison-section {
+            margin-bottom: 30px;
+        }
+
+        .section-title {
+            font-size: 24px;
+            font-weight: 600;
+            margin-bottom: 20px;
+            color: #fff;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .comparison-table {
+            background: #1a2332;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            overflow: hidden;
+        }
+
+        .table-wrapper {
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th {
+            background: rgba(0, 206, 209, 0.1);
+            padding: 15px;
+            text-align: left;
+            font-weight: 600;
+            color: #00CED1;
+            border-bottom: 2px solid rgba(0, 206, 209, 0.3);
+        }
+
+        td {
+            padding: 15px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        tr:hover td {
+            background: rgba(0, 206, 209, 0.05);
+        }
+
+        .brand-eureka {
+            font-weight: 600;
+            color: #00CED1;
+        }
+
+        .tech-yes {
+            color: #4ade80;
+            font-weight: 600;
+        }
+
+        .tech-no {
+            color: #ef4444;
+            font-weight: 600;
+        }
+
+        .tech-partial {
+            color: #fbbf24;
+            font-weight: 600;
+        }
+
+        /* Technology Innovation Tracking */
+        .innovation-timeline {
+            background: #1a2332;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            padding: 25px;
+            margin-bottom: 30px;
+        }
+
+        .timeline-item {
+            display: flex;
+            gap: 20px;
+            margin-bottom: 25px;
+            position: relative;
+        }
+
+        .timeline-item:not(:last-child)::after {
+            content: '';
+            position: absolute;
+            left: 19px;
+            top: 40px;
+            width: 2px;
+            height: calc(100% + 10px);
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        .timeline-marker {
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, #00CED1, #1e90ff);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+            flex-shrink: 0;
+        }
+
+        .timeline-content {
+            flex: 1;
+        }
+
+        .timeline-date {
+            font-size: 12px;
+            color: #6b7280;
+            margin-bottom: 5px;
+        }
+
+        .timeline-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: #fff;
+            margin-bottom: 5px;
+        }
+
+        .timeline-description {
+            font-size: 14px;
+            color: #9ca3af;
+            line-height: 1.5;
+        }
+
+        /* Patent Analysis */
+        .patent-analysis {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .chart-container {
+            background: #1a2332;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            padding: 20px;
+        }
+
+        .chart-title {
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 15px;
+            color: #fff;
+        }
+
+        .chart-box {
+            height: 300px;
+        }
+
+        /* AI Recognition Score */
+        .ai-perception {
+            background: #1a2332;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            padding: 25px;
+            margin-bottom: 30px;
+        }
+
+        .perception-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
+
+        .perception-item {
+            text-align: center;
+            padding: 20px;
+            background: rgba(0, 206, 209, 0.05);
+            border: 1px solid rgba(0, 206, 209, 0.2);
+            border-radius: 10px;
+            transition: all 0.3s;
+        }
+
+        .perception-item:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(0, 206, 209, 0.2);
+        }
+
+        .perception-score {
+            font-size: 36px;
+            font-weight: 700;
+            color: #00CED1;
+            margin-bottom: 10px;
+        }
+
+        .perception-label {
+            font-size: 14px;
+            color: #9ca3af;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .page-title {
+                font-size: 24px;
+            }
+
+            .patent-analysis {
+                grid-template-columns: 1fr;
+            }
+
+            .tech-overview {
+                grid-template-columns: 1fr;
+            }
+
+            .table-wrapper {
+                overflow-x: auto;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="dashboard-content">
+        <!-- Page Header -->
+        <div class="page-header">
+            <h1 class="page-title">Eureka Technology Comparison Analysis</h1>
+            <p class="page-subtitle">Comprehensive Technology Competitiveness Assessment and Innovation Tracking</p>
+        </div>
+
+        <!-- Technology Comparison Overview -->
+        <div class="tech-overview">
+            <div class="tech-card">
+                <div class="tech-card-header">
+                    <span class="tech-name">Edge Cleaning Technology</span>
+                    <span class="tech-status status-leading">Leading</span>
+                </div>
+                <div class="tech-metrics">
+                    <div class="metric-item">
+                        <span class="metric-name">AI Mention Rate</span>
+                        <div class="metric-bar">
+                            <div class="metric-fill" style="width: 94%"></div>
+                        </div>
+                        <span class="metric-value">94%</span>
+                    </div>
+                    <div class="metric-item">
+                        <span class="metric-name">Tech Recognition</span>
+                        <div class="metric-bar">
+                            <div class="metric-fill" style="width: 92%"></div>
+                        </div>
+                        <span class="metric-value">92%</span>
+                    </div>
+                    <div class="metric-item">
+                        <span class="metric-name">Patent Count</span>
+                        <div class="metric-bar">
+                            <div class="metric-fill" style="width: 88%"></div>
+                        </div>
+                        <span class="metric-value">15 patents</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="tech-card">
+                <div class="tech-card-header">
+                    <span class="tech-name">Auto Dust Collection System</span>
+                    <span class="tech-status status-competitive">Competitive</span>
+                </div>
+                <div class="tech-metrics">
+                    <div class="metric-item">
+                        <span class="metric-name">AI Mention Rate</span>
+                        <div class="metric-bar">
+                            <div class="metric-fill" style="width: 82%"></div>
+                        </div>
+                        <span class="metric-value">82%</span>
+                    </div>
+                    <div class="metric-item">
+                        <span class="metric-name">Tech Recognition</span>
+                        <div class="metric-bar">
+                            <div class="metric-fill" style="width: 85%"></div>
+                        </div>
+                        <span class="metric-value">85%</span>
+                    </div>
+                    <div class="metric-item">
+                        <span class="metric-name">Patent Count</span>
+                        <div class="metric-bar">
+                            <div class="metric-fill" style="width: 76%"></div>
+                        </div>
+                        <span class="metric-value">12 patents</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="tech-card">
+                <div class="tech-card-header">
+                    <span class="tech-name">AI Obstacle Avoidance Technology</span>
+                    <span class="tech-status status-competitive">Competitive</span>
+                </div>
+                <div class="tech-metrics">
+                    <div class="metric-item">
+                        <span class="metric-name">AI Mention Rate</span>
+                        <div class="metric-bar">
+                            <div class="metric-fill" style="width: 78%"></div>
+                        </div>
+                        <span class="metric-value">78%</span>
+                    </div>
+                    <div class="metric-item">
+                        <span class="metric-name">Tech Recognition</span>
+                        <div class="metric-bar">
+                            <div class="metric-fill" style="width: 80%"></div>
+                        </div>
+                        <span class="metric-value">80%</span>
+                    </div>
+                    <div class="metric-item">
+                        <span class="metric-name">Patent Count</span>
+                        <div class="metric-bar">
+                            <div class="metric-fill" style="width: 68%"></div>
+                        </div>
+                        <span class="metric-value">10 patents</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="tech-card">
+                <div class="tech-card-header">
+                    <span class="tech-name">Mop Self-cleaning</span>
+                    <span class="tech-status status-leading">Leading</span>
+                </div>
+                <div class="tech-metrics">
+                    <div class="metric-item">
+                        <span class="metric-name">AI Mention Rate</span>
+                        <div class="metric-bar">
+                            <div class="metric-fill" style="width: 89%"></div>
+                        </div>
+                        <span class="metric-value">89%</span>
+                    </div>
+                    <div class="metric-item">
+                        <span class="metric-name">Tech Recognition</span>
+                        <div class="metric-bar">
+                            <div class="metric-fill" style="width: 91%"></div>
+                        </div>
+                        <span class="metric-value">91%</span>
+                    </div>
+                    <div class="metric-item">
+                        <span class="metric-name">Patent Count</span>
+                        <div class="metric-bar">
+                            <div class="metric-fill" style="width: 82%"></div>
+                        </div>
+                        <span class="metric-value">14 patents</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Detailed Technology Comparison Table -->
+        <div class="comparison-section">
+            <h2 class="section-title">
+                <span>📊</span> Core Technology Feature Comparison
+            </h2>
+            <div class="comparison-table">
+                <div class="table-wrapper">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Technology Feature</th>
+                                <th class="brand-eureka">Eureka</th>
+                                <th>ECOVACS</th>
+                                <th>Roborock</th>
+                                <th>Dreame</th>
+                                <th>NARWAL</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>TÜV Certified Edge Cleaning</td>
+                                <td class="tech-yes">✓ Exclusive</td>
+                                <td class="tech-no">✗</td>
+                                <td class="tech-no">✗</td>
+                                <td class="tech-no">✗</td>
+                                <td class="tech-no">✗</td>
+                            </tr>
+                            <tr>
+                                <td>8-in-1 All-in-one Base Station</td>
+                                <td class="tech-yes">✓</td>
+                                <td class="tech-yes">✓</td>
+                                <td class="tech-partial">6-in-1</td>
+                                <td class="tech-yes">✓</td>
+                                <td class="tech-partial">5-in-1</td>
+                            </tr>
+                            <tr>
+                                <td>75-day Maintenance Free</td>
+                                <td class="tech-yes">✓</td>
+                                <td class="tech-partial">60 days</td>
+                                <td class="tech-partial">60 days</td>
+                                <td class="tech-yes">✓</td>
+                                <td class="tech-partial">45 days</td>
+                            </tr>
+                            <tr>
+                                <td>Color + Infrared Dual Vision</td>
+                                <td class="tech-yes">✓</td>
+                                <td class="tech-yes">✓</td>
+                                <td class="tech-partial">Infrared Only</td>
+                                <td class="tech-yes">✓</td>
+                                <td class="tech-partial">Color Only</td>
+                            </tr>
+                            <tr>
+                                <td>Robotic Arm Technology</td>
+                                <td class="tech-no">In Development</td>
+                                <td class="tech-yes">✓ T30</td>
+                                <td class="tech-no">✗</td>
+                                <td class="tech-no">✗</td>
+                                <td class="tech-no">✗</td>
+                            </tr>
+                            <tr>
+                                <td>Hot Water Mop Washing</td>
+                                <td class="tech-yes">✓ 60°C</td>
+                                <td class="tech-yes">✓ 55°C</td>
+                                <td class="tech-yes">✓ 60°C</td>
+                                <td class="tech-yes">✓ 60°C</td>
+                                <td class="tech-partial">45°C</td>
+                            </tr>
+                            <tr>
+                                <td>AI Large Model Integration</td>
+                                <td class="tech-partial">Testing</td>
+                                <td class="tech-yes">✓ YIKO</td>
+                                <td class="tech-partial">Planned</td>
+                                <td class="tech-no">✗</td>
+                                <td class="tech-no">✗</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- Technology Innovation Tracking -->
+        <div class="innovation-timeline">
+            <h2 class="section-title">
+                <span>🚀</span> Technology Innovation Timeline
+            </h2>
+            <div class="timeline-item">
+                <div class="timeline-marker">🏆</div>
+                <div class="timeline-content">
+                    <div class="timeline-date">September 2024</div>
+                    <div class="timeline-title">Received TÜV Rheinland "Efficient Edge Cleaning" Certification</div>
+                    <div class="timeline-description">Eureka becomes the first brand in the industry to receive this certification, with edge cleaning efficiency reaching 94%, significantly leading the industry average</div>
+                </div>
+            </div>
+            <div class="timeline-item">
+                <div class="timeline-marker">💡</div>
+                <div class="timeline-content">
+                    <div class="timeline-date">July 2024</div>
+                    <div class="timeline-title">Launched J15 Pro Ultra Flagship Product</div>
+                    <div class="timeline-description">Integrated 8-in-1 all-in-one base station, achieving 75-day maintenance-free operation, equipped with color + infrared dual vision system, Amazon rating 4.47 stars</div>
+                </div>
+            </div>
+            <div class="timeline-item">
+                <div class="timeline-marker">🔬</div>
+                <div class="timeline-content">
+                    <div class="timeline-date">May 2024</div>
+                    <div class="timeline-title">Dual Vision System Technology Breakthrough</div>
+                    <div class="timeline-description">Successfully developed color vision + infrared vision fusion technology, improving obstacle avoidance accuracy in low-light environments to 98.5%</div>
+                </div>
+            </div>
+            <div class="timeline-item">
+                <div class="timeline-marker">🎯</div>
+                <div class="timeline-content">
+                    <div class="timeline-date">March 2024</div>
+                    <div class="timeline-title">Launched AI Large Model Integration Plan</div>
+                    <div class="timeline-description">Cooperating with leading domestic AI companies, planning to integrate large language models into robot vacuums, enabling natural language interaction</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Patent Analysis -->
+        <div class="patent-analysis">
+            <div class="chart-container">
+                <h3 class="chart-title">Patent Application Trends</h3>
+                <div id="patentTrendChart" class="chart-box"></div>
+            </div>
+            <div class="chart-container">
+                <h3 class="chart-title">Technology Field Distribution</h3>
+                <div id="techFieldChart" class="chart-box"></div>
+            </div>
+        </div>
+
+        <!-- AI Recognition Score -->
+        <div class="ai-perception">
+            <h2 class="section-title">
+                <span>🤖</span> AI Search Engine Technology Recognition Score
+            </h2>
+            <div class="perception-grid">
+                <div class="perception-item">
+                    <div class="perception-score">92</div>
+                    <div class="perception-label">ChatGPT</div>
+                </div>
+                <div class="perception-item">
+                    <div class="perception-score">88</div>
+                    <div class="perception-label">Perplexity</div>
+                </div>
+                <div class="perception-item">
+                    <div class="perception-score">85</div>
+                    <div class="perception-label">Google AI</div>
+                </div>
+                <div class="perception-item">
+                    <div class="perception-score">90</div>
+                    <div class="perception-label">Claude</div>
+                </div>
+                <div class="perception-item">
+                    <div class="perception-score">83</div>
+                    <div class="perception-label">ERNIE Bot</div>
+                </div>
+                <div class="perception-item">
+                    <div class="perception-score">87</div>
+                    <div class="perception-label">Overall Score</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Patent application trend chart
+        function initPatentTrendChart() {
+            const chart = echarts.init(document.getElementById('patentTrendChart'));
+            const option = {
+                tooltip: {
+                    trigger: 'axis',
+                    backgroundColor: 'rgba(0, 0, 0, 0.8)',
+                    borderColor: '#00CED1',
+                    borderWidth: 1,
+                    textStyle: { color: '#fff' }
+                },
+                legend: {
+                    data: ['Eureka', 'ECOVACS', 'Roborock'],
+                    textStyle: { color: '#9ca3af' },
+                    top: 10
+                },
+                grid: {
+                    left: '3%',
+                    right: '4%',
+                    bottom: '3%',
+                    containLabel: true
+                },
+                xAxis: {
+                    type: 'category',
+                    data: ['2021', '2022', '2023', '2024'],
+                    axisLine: { lineStyle: { color: '#374151' } },
+                    axisLabel: { color: '#9ca3af' }
+                },
+                yAxis: {
+                    type: 'value',
+                    name: 'Patent Count',
+                    nameTextStyle: { color: '#9ca3af' },
+                    axisLine: { lineStyle: { color: '#374151' } },
+                    axisLabel: { color: '#9ca3af' },
+                    splitLine: { lineStyle: { color: '#1f2937' } }
+                },
+                series: [
+                    {
+                        name: 'Eureka',
+                        type: 'line',
+                        smooth: true,
+                        data: [12, 18, 25, 35],
+                        lineStyle: { color: '#00CED1', width: 3 },
+                        areaStyle: { color: 'rgba(0, 206, 209, 0.2)' },
+                        emphasis: { focus: 'series' }
+                    },
+                    {
+                        name: 'ECOVACS',
+                        type: 'line',
+                        smooth: true,
+                        data: [28, 32, 38, 45],
+                        lineStyle: { color: '#f59e0b' }
+                    },
+                    {
+                        name: 'Roborock',
+                        type: 'line',
+                        smooth: true,
+                        data: [20, 26, 30, 36],
+                        lineStyle: { color: '#ef4444' }
+                    }
+                ]
+            };
+            chart.setOption(option);
+            return chart;
+        }
+
+        // Technology field distribution chart
+        function initTechFieldChart() {
+            const chart = echarts.init(document.getElementById('techFieldChart'));
+            const option = {
+                tooltip: {
+                    trigger: 'item',
+                    backgroundColor: 'rgba(0, 0, 0, 0.8)',
+                    borderColor: '#00CED1',
+                    borderWidth: 1,
+                    textStyle: { color: '#fff' }
+                },
+                series: [
+                    {
+                        name: 'Technology Field',
+                        type: 'pie',
+                        radius: ['40%', '70%'],
+                        avoidLabelOverlap: false,
+                        itemStyle: {
+                            borderRadius: 10,
+                            borderColor: '#0a0f1c',
+                            borderWidth: 2
+                        },
+                        label: {
+                            show: true,
+                            formatter: '{b}\n{d}%',
+                            color: '#9ca3af'
+                        },
+                        labelLine: {
+                            lineStyle: { color: '#374151' }
+                        },
+                        data: [
+                            { value: 35, name: 'Cleaning Technology', itemStyle: { color: '#00CED1' } },
+                            { value: 25, name: 'Navigation Algorithm', itemStyle: { color: '#f59e0b' } },
+                            { value: 20, name: 'Intelligent Control', itemStyle: { color: '#8b5cf6' } },
+                            { value: 12, name: 'Base Station System', itemStyle: { color: '#10b981' } },
+                            { value: 8, name: 'Others', itemStyle: { color: '#6b7280' } }
+                        ]
+                    }
+                ]
+            };
+            chart.setOption(option);
+            return chart;
+        }
+
+        // Initialize all charts
+        document.addEventListener('DOMContentLoaded', () => {
+            const patentChart = initPatentTrendChart();
+            const techFieldChart = initTechFieldChart();
+
+            // Responsive handling
+            window.addEventListener('resize', () => {
+                patentChart.resize();
+                techFieldChart.resize();
+            });
+
+            // Simulate data updates
+            setInterval(() => {
+                const scores = document.querySelectorAll('.perception-score');
+                scores.forEach(score => {
+                    const currentValue = parseInt(score.textContent);
+                    const change = Math.floor(Math.random() * 3) - 1;
+                    const newValue = Math.max(80, Math.min(95, currentValue + change));
+                    score.textContent = newValue;
+                });
+            }, 5000);
+        });
+    </script>
+</body>
+</html>

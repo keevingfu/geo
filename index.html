@@ -144,6 +144,12 @@
             border-left-color: #00CED1;
         }
 
+        .submenu-divider {
+            height: 1px;
+            background: rgba(255,255,255,0.1);
+            margin: 8px 25px;
+        }
+
         /* Content Area */
         .content-area {
             flex: 1;
@@ -262,18 +268,50 @@
                 </div>
             </div>
 
-            <!-- GEO Scene Menu -->
+            <!-- Competitive Intelligence -->
             <div class="menu-item">
                 <div class="menu-header" onclick="toggleMenu(this)">
-                    <span>GEO Scene</span>
+                    <span>Competitive Intelligence</span>
                     <span class="menu-arrow">▶</span>
                 </div>
                 <div class="submenu">
-                    <div class="submenu-item" data-page="geo-competitive-intelligence">Competitive Intelligence</div>
-                    <div class="submenu-item" data-page="geo-brand-management">Brand Management</div>
-                    <div class="submenu-item" data-page="geo-b2b-marketing">B2B Marketing</div>
-                    <div class="submenu-item" data-page="geo-content-strategy">Content Strategy</div>
-                    <div class="submenu-item" data-page="geo-realtime-monitoring">Realtime Monitoring</div>
+                    <div class="submenu-item" data-page="eureka-competitive-intelligence">Competitive Dashboard</div>
+                    <div class="submenu-item" data-page="eureka-tech-analysis">Technology Analysis</div>
+                    <div class="submenu-item" data-page="eureka-market-trends">Market Trends</div>
+                </div>
+            </div>
+
+            <!-- Content Strategy Menu -->
+            <div class="menu-item">
+                <div class="menu-header" onclick="toggleMenu(this)">
+                    <span>Content Strategy</span>
+                    <span class="menu-arrow">▶</span>
+                </div>
+                <div class="submenu">
+                    <div class="submenu-item" data-page="eureka-content-strategy">Eureka Content Strategy</div>
+                    <div class="submenu-item" data-page="eureka-content-insights">Eureka Content Insights</div>
+                    <div class="submenu-item" data-page="eureka-content-calendar">Eureka Content Calendar</div>
+                    <div class="submenu-divider"></div>
+                    <div class="submenu-item" data-page="eureka-global-content">Global Content Strategy</div>
+                    <div class="submenu-item" data-page="eureka-content-editor">Multi-Language Editor</div>
+                    <div class="submenu-item" data-page="eureka-social-media">Social Media Management</div>
+                </div>
+            </div>
+
+            <!-- Scenarios & SOP Menu -->
+            <div class="menu-item">
+                <div class="menu-header" onclick="toggleMenu(this)">
+                    <span>Scenarios & SOP</span>
+                    <span class="menu-arrow">▶</span>
+                </div>
+                <div class="submenu">
+                    <div class="submenu-item" data-page="geo-competitive-intelligence">GEO Competitive Intelligence</div>
+                    <div class="submenu-item" data-page="geo-brand-management">GEO Brand Management</div>
+                    <div class="submenu-item" data-page="geo-b2b-marketing">GEO B2B Marketing</div>
+                    <div class="submenu-item" data-page="geo-content-strategy">GEO Content Strategy</div>
+                    <div class="submenu-item" data-page="geo-realtime-monitoring">GEO Realtime Monitoring</div>
+                    <div class="submenu-divider"></div>
+                    <div class="submenu-item" data-page="geo-roadmaps-dataflows">GEO SOP</div>
                 </div>
             </div>
 
@@ -281,13 +319,6 @@
             <div class="menu-item">
                 <div class="menu-header" data-page="eureka-geo-settings" onclick="loadPage('eureka-geo-settings')">
                     <span>Settings</span>
-                </div>
-            </div>
-
-            <!-- GEO SOP Menu -->
-            <div class="menu-item">
-                <div class="menu-header" data-page="geo-roadmaps-dataflows" onclick="loadPage('geo-roadmaps-dataflows')">
-                    <span>GEO SOP</span>
                 </div>
             </div>
         </nav>
